@@ -1,9 +1,18 @@
 Build.PL
 Changes
-MANIFEST
-README
 lib/Bio/Tools/Primer3Redux.pm
-t/00-load.t
+lib/Bio/Tools/Primer3Redux/Primer.pm
+lib/Bio/Tools/Primer3Redux/PrimerPair.pm
+lib/Bio/Tools/Primer3Redux/Result.pm
+lib/Bio/Tools/Run/Primer3Redux.pm
+MANIFEST			This list of files
+mlc
+Primer3Redux.komodoproject
+README
+t/boilerplate.t
+t/data/Primer3.fa
+t/load.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
+t/Run/Primer3Redux.t
