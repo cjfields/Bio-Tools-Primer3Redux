@@ -1,4 +1,4 @@
-#!perl -T
+#!perl
 
 use Test::More tests => 1;
 
@@ -7,4 +7,4 @@ BEGIN {
 ";
 }
 
-diag( "Testing Bio::Tools::Primer3Redux $Bio::Tools::Primer3Redux::VERSION, Perl $], $^X" );
+#diag( "Testing Bio::Tools::Primer3Redux $Bio::Tools::Primer3Redux::VERSION, Perl $], $^X" );
