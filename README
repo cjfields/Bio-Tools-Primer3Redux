@@ -1,16 +1,12 @@
 Bio-Tools-Primer3Redux
 
-The README is used to introduce the module and provide instructions on
-how to install the module, any machine dependencies it may have (for
-example C compilers and installed libraries) and any other information
-that should be provided before the module is installed.
+This is a set of modules for running and parsing Primer3 output using BioPerl.
+It is meant as an update for the previous Primer3 perl modules
+(Bio::Tools::Primer3 and Bio::Tools::Run::Primer3) to use both Primer3 v1.x and
+v2.x (which had significant API changes from v1.x).
 
-A README file is required for CPAN modules since CPAN extracts the README
-file from a module distribution so that people browsing the archive
-can use it to get an idea of the module's uses. It is usually a good idea
-to provide version information here so that people can decide whether
-fixes for the module are worth downloading.
-
+However, due to changes in the API of the parser to allow for more informational
+storage, these have been renamed to Bio::Tools::Primer3Redux.  
 
 INSTALLATION
 
