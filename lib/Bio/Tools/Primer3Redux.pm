@@ -13,13 +13,19 @@ the program primer3.
 =head1 SYNOPSIS
 
  # parse primer3 output to get some data
- # this is also called from Bio::Tools::Run::Primer3
- use Bio::Tools::Primer3;
+ # this is also called from Bio::Tools::Run::Primer3Redux
+ use Bio::Tools::Primer3Redux;
 
  # read a primer3 output file
- my $p3 = Bio::Tools::Primer3::Redux->new(-file=>"data/primer3_output.txt");
+ my $p3 = Bio::Tools::Primer3::Primer3Redux->new(-file=>"data/primer3_output.txt");
  
  # iterate through each result in the file
+ while (my $result = $p3->next_result) {
+    # iterate through each primer pair
+    while (my $pair = $p3->next_primer_pair) {
+        # do stuff with primer pairs...
+    }
+ }
 
 =head1 DESCRIPTION
 
@@ -30,8 +36,11 @@ This module provides a bioperl interface to the program primer3. See
 http://www-genome.wi.mit.edu/genome_software/other/primer3.html
 for details and to download the software.
 
-This module is based on one written by Chad Matsalla
-(bioinformatics1@dieselwurks.com)
+This module is a reimplementation of the original Bio::Tools::Primer3 module by
+Rob Edwards, itself largely based on one written by Chad Matsalla
+(bioinformatics1@dieselwurks.com). Due to significant API changes between this
+and the previous Primer3 module, this has been redubbed
+Bio::Tools::Primer3Redux.
 
 =head1 FEEDBACK
 
@@ -107,7 +116,19 @@ use base qw(Bio::Root::IO Bio::AnalysisParserI);
   Args    : -file (optional) file of primer3 results to parse -verbose
             (optional) set verbose output
   Notes   :
+  Status  : stable
 
+=cut
+
+=head2 next_result
+
+  Title    : next_result
+  Usage    : $obj->next_result
+  Function : Returns the next Bio::Tools::Primer3Redux::Result instance (if one)
+  Returns  : Bio::Tools::Primer3Redux::Result || undef
+  Args     : none 
+  Status   : stable
+ 
 =cut
 
 {
@@ -158,9 +179,9 @@ sub next_result {
 
  Title    : start_document
  Usage    : $obj->start_document
- Function : 
- Returns  : 
- Args     : 
+ Function : initialize Primer3 output parsing
+ Returns  : none
+ Args     : none
 
 =cut
 
@@ -175,9 +196,9 @@ sub start_document {
 
  Title    : end_document
  Usage    : $obj->end_document
- Function : 
- Returns  : 
- Args     : 
+ Function : clean up after parsing of Primer3 document is complete
+ Returns  : L<Bio::Tools::Primer3Redux::Result>
+ Args     : none
 
 =cut
 
