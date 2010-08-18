@@ -17,7 +17,7 @@ the program primer3.
  use Bio::Tools::Primer3Redux;
 
  # read a primer3 output file
- my $p3 = Bio::Tools::Primer3::Primer3Redux->new(-file=>"data/primer3_output.txt");
+ my $p3 = Bio::Tools::Primer3Redux->new(-file=>"data/primer3_output.txt");
  
  # iterate through each result in the file
  while (my $result = $p3->next_result) {
