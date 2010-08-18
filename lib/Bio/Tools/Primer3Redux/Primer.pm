@@ -12,9 +12,9 @@
 
 =head1 NAME
 
-Bio::Tools::Primer3Redux::Primer - Simple Decorator of a Bio::SeqFeature::Generic
-with convenience methods for retrieving Tm, GC, validating primer seq against
-attached sequence, etc.
+Bio::Tools::Primer3Redux::Primer - Simple Decorator of a
+Bio::SeqFeature::Generic with convenience methods for retrieving Tm, GC,
+validating primer seq against attached sequence, etc.
 
 =head1 SYNOPSIS
 
@@ -36,7 +36,9 @@ attached sequence, etc.
  
 =head1 DESCRIPTION
 
-
+This class is a simple subclass of Bio::SeqFeature::Generic that adds
+convenience accessor methods for primer-specific data, such as Tm, GC content,
+and other interesting bits of information returned from Primer3.
 
 =head1 FEEDBACK
 
@@ -107,9 +109,10 @@ sub oligo_type {
 
  Title    : validate_seq
  Usage    : $obj->validate_seq
- Function : 
- Returns  : 
- Args     : 
+ Function : Checks the calculated primer sequence against the actual sequence
+            being analysed.
+ Returns  : True (1) if validated, False (0) and a warning otherwise
+ Args     : none
 
 =cut
 
@@ -128,9 +131,9 @@ sub validate_seq {
 
  Title    : melting_temp
  Usage    : $obj->melting_temp
- Function : 
- Returns  : 
- Args     : 
+ Function : returns the Tm calculated for the primer via Primer3
+ Returns  : float
+ Args     : optional Tm (possibly calculated via other means)
 
 =cut
 
@@ -147,9 +150,9 @@ sub melting_temp {
 
  Title    : gc
  Usage    : $obj->gc
- Function : 
- Returns  : 
- Args     : 
+ Function : returns the GC content calculated for the primer via Primer3
+ Returns  : float (percent)
+ Args     : optional GC content (possibly calculated via other means)
 
 =cut
 
@@ -166,9 +169,9 @@ sub gc_content {
 
  Title    : run_description
  Usage    : $obj->run_description
- Function : 
- Returns  : 
- Args     : 
+ Function : returns the run description for this primer (via Primer3)
+ Returns  : string
+ Args     : optional description
 
 =cut
 

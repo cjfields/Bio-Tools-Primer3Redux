@@ -18,7 +18,11 @@ right primers, internal oligos, and any amplicon-related information
 
 =head1 SYNOPSIS
 
-
+  # get the primer pair from the Bio::Tools::Primer3Redux::Result
+  my $pair = $result->next_primer_pair;
+  
+  # grab left/right primers
+  my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
 
 =head1 DESCRIPTION
 
@@ -77,10 +81,7 @@ use base qw(Bio::SeqFeature::Generic);
 =head2 left_primer
 
  Title    : left_primer
- Usage    : $obj->left_primer
- Function : 
- Returns  : 
- Args     : 
+ Note     : Alias of forward_primer()
 
 =cut
 
@@ -92,9 +93,9 @@ sub left_primer {
 
  Title    : forward_primer
  Usage    : $obj->forward_primer
- Function : 
- Returns  : 
- Args     : 
+ Function : returns the forward (left) primer
+ Returns  : Bio::Tools::Primer3Redux::Primer
+ Args     : Optional Bio::Tools::Primer3Redux::Primer
 
 =cut
 
@@ -111,10 +112,7 @@ sub forward_primer {
 =head2 right_primer
 
  Title    : right_primer
- Usage    : $obj->right_primer
- Function : 
- Returns  : 
- Args     : 
+ Note     : alias of reverse_primer()
 
 =cut
 
@@ -124,9 +122,9 @@ sub right_primer { shift->reverse_primer(@_)}
 
  Title    : reverse_primer
  Usage    : $obj->reverse_primer
- Function : 
- Returns  : 
- Args     : 
+ Function : returns the reverse (right) primer
+ Returns  : Bio::Tools::Primer3Redux::Primer
+ Args     : Optional Bio::Tools::Primer3Redux::Primer
 
 =cut
 
@@ -144,9 +142,9 @@ sub reverse_primer {
 
  Title    : internal_oligo
  Usage    : $obj->internal_oligo
- Function : 
- Returns  : 
- Args     : 
+ Function : returns the internal oligo (if present)
+ Returns  : Bio::Tools::Primer3Redux::Primer
+ Args     : Optional Bio::Tools::Primer3Redux::Primer
 
 =cut
 
