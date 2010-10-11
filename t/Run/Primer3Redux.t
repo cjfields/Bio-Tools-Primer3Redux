@@ -77,3 +77,5 @@ SKIP: {
 }
 
 done_testing();
+
+unlink ('mlc') if -e 'mlc';
