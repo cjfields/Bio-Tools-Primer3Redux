@@ -135,12 +135,11 @@ Internal methods are usually preceded with a _
 
 package Bio::Tools::Run::Primer3Redux;
 
+use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
+
 use strict;
 use Bio::Tools::Primer3Redux;
 use File::Spec;
-use Data::Dumper;
-
-use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
 
 my $PROGRAMNAME;
 my %PARAMS;
