@@ -6,8 +6,6 @@ lib/Bio/Tools/Primer3Redux/PrimerPair.pm
 lib/Bio/Tools/Primer3Redux/Result.pm
 lib/Bio/Tools/Run/Primer3Redux.pm
 MANIFEST			This list of files
-mlc
-Primer3Redux.komodoproject
 README
 t/boilerplate.t
 t/data/Primer3.fa
