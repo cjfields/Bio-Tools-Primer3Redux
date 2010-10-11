@@ -1,4 +1,3 @@
-# $Id: Report.pm,v 0.01 2007-03-27 12:43:27 heikki Exp $
 #
 # BioPerl module for Bio::Tools::Primer3Redux::Primer
 #

@@ -12,7 +12,7 @@
 
 =head1 NAME
 
-Bio::Tools::Primer3::Result - Result class for Primer3 data
+Bio::Tools::Primer3Redux::Result - Result class for Primer3 data
 
 =head1 SYNOPSIS
 

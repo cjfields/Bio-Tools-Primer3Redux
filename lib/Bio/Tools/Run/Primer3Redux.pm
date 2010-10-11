@@ -1,7 +1,5 @@
-# $Id: Primer3.pm 15558 2009-02-21 22:07:57Z maj $
 #
-# This is the original copyright statement. I have relied on Chad's module
-# extensively for this module.
+# BioPerl module for Bio::Tools::Run::Primer3Redux
 #
 # Copyright Chad Matsalla, Rob Edwards, Chris Fields
 #
@@ -92,7 +90,7 @@ web:
 Chris Fields cjfields-at-bioperl-dot-org
 
 Refactored from the original Primer3 parser by Rob Edwards, which in turn was
-based heavily on work of Chad Matsalla
+based heavily on work of Chad Matsalla.
 
 bioinformatics1@dieselwurks.com
 
