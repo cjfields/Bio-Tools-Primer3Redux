@@ -1,6 +1,6 @@
 # BioPerl module for Bio::Tools::Primer3Redux
 #
-# Copyright (c) Chris Fields
+# Copyright Chad Matsalla, Rob Edwards, Chris Fields
 #
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code

@@ -16,6 +16,16 @@ Bio::Tools::Primer3::Result - Result class for Primer3 data
 
 =head1 SYNOPSIS
 
+    # parse a Primer3 report, and get Bio::Tools::Primer3Redux::Result
+    while (my $result = $parser->next_result) {
+        say $result->num_primer_pairs; 
+        my $pair = $result->next_primer_pair;
+
+        my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
+        
+        say $fp->seq->seq;
+        say $rp->seq->seq;
+    }
 
 
 =head1 DESCRIPTION

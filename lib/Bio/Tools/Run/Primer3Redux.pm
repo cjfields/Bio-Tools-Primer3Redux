@@ -3,22 +3,7 @@
 # This is the original copyright statement. I have relied on Chad's module
 # extensively for this module.
 #
-# Copyright (c) 1997-2001 bioperl, Chad Matsalla. All Rights Reserved.
-#           This module is free software; you can redistribute it and/or
-#           modify it under the same terms as Perl itself. 
-#
-# Copyright Chad Matsalla
-#
-# You may distribute this module under the same terms as perl itself
-# POD documentation - main docs before the code
-#
-# But I have modified lots of it, so I guess I should add:
-#
-# Copyright (c) 2003 bioperl, Rob Edwards. All Rights Reserved.
-#           This module is free software; you can redistribute it and/or
-#           modify it under the same terms as Perl itself. 
-#
-# Copyright Chris Fields
+# Copyright Chad Matsalla, Rob Edwards, Chris Fields
 #
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code
