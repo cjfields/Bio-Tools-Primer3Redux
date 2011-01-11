@@ -92,6 +92,8 @@ use Bio::Seq;
 use Bio::Tools::Primer3Redux::Primer;
 use Bio::Tools::Primer3Redux::PrimerPair;
 
+use Scalar::Util qw(reftype blessed);
+
 =head2 new
 
  Title   : new
@@ -382,8 +384,8 @@ sub _generate_iterator {
             my $ft = shift @feat_data;
             return unless $ft;
             # return cached features if previously generated and seq already attached
-            return $ft->{PAIR} if (UNIVERSAL::isa($ft->{PAIR}, 'Bio::SeqFeature::Generic'))
-                && !$self->{reattach_sf};
+            return $ft->{PAIR} if (blessed $ft->{PAIR} && $ft->{PAIR}->isa('Bio::SeqFeature::Generic')
+                && !$self->{reattach_sf});
             
             # carry over persistent data
             for my $fkey (keys %{$ft}) {
@@ -404,7 +406,7 @@ sub _generate_iterator {
             my $ft = shift @feat_data;
             return unless $ft;
             # return cached features if previously generated and seq already attached
-            if (UNIVERSAL::isa($ft, 'Bio::SeqFeature::Generic') && !$self->{reattach_sf}) {
+            if (blessed $ft && $ft->isa('Bio::SeqFeature::Generic') && !$self->{reattach_sf}) {
                 $ct++;
                 return $ft;
             }
@@ -445,7 +447,7 @@ sub _generate_primer {
                                                   -display_name => $type.'_'.$rank,
                                                   -primary_tag  => $primary,
                                                   -tag          => $ft);
-    $seq->add_SeqFeature($sf) if $seq and UNIVERSAL::isa($seq, 'Bio::SeqI');
+    $seq->add_SeqFeature($sf) if ($seq && blessed $seq && $seq->isa('Bio::SeqI'));
     
     # cache Primer
     $instance->{feature_data}{$rank}{uc $type} = $sf;
@@ -465,7 +467,7 @@ sub _generate_pair {
         my $sf = _generate_primer($ft->{$type}, $seq, $instance);
         $pair->add_SeqFeature($sf, 'EXPAND');
     }
-    $seq->add_SeqFeature($pair) if $seq and UNIVERSAL::isa($seq, 'Bio::SeqI');
+    $seq->add_SeqFeature($pair) if ($seq && blessed $seq && $seq->isa('Bio::SeqI'));
     # cache PrimerPair
     $instance->{feature_data}{$rank}{PAIR} = $pair;    
     return $pair;

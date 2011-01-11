@@ -123,6 +123,7 @@ use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
 use strict;
 use Bio::Tools::Primer3Redux;
 use File::Spec;
+use Scalar::Util qw(blessed reftype);
 
 my $PROGRAMNAME;
 my %PARAMS;
@@ -510,10 +511,10 @@ sub set_parameters {
             }
         grep { uc $_ eq 'SEQ' } keys %args;
     if (defined $seq) {
-        my @seqs = (UNIVERSAL::isa($seq, 'ARRAY')) ? @$seq : ($seq);
+        my @seqs = (ref $seq  && (reftype $seq  eq 'ARRAY')) ? @$seq : ($seq);
         for my $s (@seqs) {
-            $self->throw("-seq must be a single or array reference of Bio::SeqI") unless (ref $seq &&
-                UNIVERSAL::isa($seq, 'Bio::SeqI'));
+            $self->throw("-seq must be a single or array reference of Bio::SeqI") unless (blessed $seq &&
+                $seq->isa('Bio::SeqI'));
         }
         $self->{seq_cache} = \@seqs;
     }
@@ -653,7 +654,7 @@ sub _generate_input_file {
     my @seqdata;
     for my $seq (@$seqs) {
         $self->throw("Arguments to run() must be a single or array ref of Bio::SeqI")
-            if !UNIVERSAL::isa($seq, 'Bio::SeqI');
+            unless (blessed $seq && $seq->isa('Bio::SeqI')) ;
         push @seqdata, {$id_tag     => $seq->id,
                         $seq_tag    => $seq->seq};
     }
@@ -670,7 +671,7 @@ sub _generate_input_file {
     
     for my $param (sort keys %$args) {
         my $tmp = $self->$param;
-        my @data = UNIVERSAL::isa($tmp, 'ARRAY') ? @$tmp : $tmp;
+        my @data = (ref $tmp && reftype $tmp eq 'ARRAY' ) ? @$tmp : $tmp;
         for my $d (@data) {
             $string .= "$param=$d\n";
         }
