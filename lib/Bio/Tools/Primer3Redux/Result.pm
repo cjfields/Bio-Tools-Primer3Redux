@@ -130,7 +130,7 @@ sub attach_seq {
         my $seq = shift;
         if (defined $seq) {
             $self->throw("Passed sequence must be a Bio::SeqI")
-                unless UNVERSAL::isa($seq, 'Bio::SeqI');
+                unless UNIVERSAL::isa($seq, 'Bio::SeqI');
         } 
         # this allows resetting seq() to use built-in report sequence
         $self->{using_seq} = $seq;
