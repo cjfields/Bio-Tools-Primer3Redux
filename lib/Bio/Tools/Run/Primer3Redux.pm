@@ -232,6 +232,7 @@ BEGIN {
     SEQUENCE_ID
     SEQUENCE_PRIMER_REVCOMP
     SEQUENCE_OVERLAP_JUNCTION_LIST
+    SEQUENCE_PRIMER_PAIR_OK_REGION_LIST
 
     PRIMER_DNA_CONC
     PRIMER_LIBERAL_BASE
@@ -371,6 +372,9 @@ BEGIN {
            you to retrieve the results
  Args    : -outfile : file name send output results to 
 	       -path    : path to primer3 executable
+	       -p3_settings_file :(optional) path to the settings file. Supported only by primer3 version 2 or above.
+           -verbose :(optional) boolean value to set verbose output.
+
 
 =cut
 
@@ -379,8 +383,8 @@ sub new {
 	my $self = $class->SUPER::new(@args);
 	$self->io->_initialize_io();
 
-    my ($program, $outfile, $path) = $self->_rearrange(
-        [qw(PROGRAM OUTFILE PATH)], @args);
+    my ($program, $outfile, $path, $p3_settings_file, $verbose) = $self->_rearrange(
+        [qw(PROGRAM OUTFILE PATH P3_SETTINGS_FILE VERBOSE)], @args);
 
 	$program    &&      $self->program_name($program);
     
@@ -392,9 +396,15 @@ sub new {
 		$self->program_dir($path);
 		$self->program_name($prog);
 	}
-
+        if ($verbose){
+            $self->{'verbose'}=1;
+        }
     # determine the correct set of parameters to use (v1 vs v2)
     my $v = ($self->executable) ?  $self->version : $DEFAULT_VERSION;
+    
+    if (($p3_settings_file)&&($v=~/^2/)){ #apply $p3_settings_file only if version>2
+        $self->p3_settings_file($p3_settings_file);
+    }
     
     my $ct = 0;
     
@@ -533,6 +543,7 @@ sub set_parameters {
             }
             $self->$method($args{$key});
             $added_args++;
+            if($self->{'verbose'}){print("$key has been updated to $args{$key}.\n");};
         }
     }
 	return $added_args;
@@ -573,6 +584,26 @@ sub reset_parameters {
     $self->_set_from_args(\%args, -methods => [sort keys %PARAMS]);    
 }
 
+=head2 p3_settings_file()
+
+ Title	: p3settingsfile()
+ Usage	: $primer3->p3settingsfile($file_path);
+ Function	: Getter/Setter for the Primer3 settings file.
+ Returns	: A string containing the path of the named settings file.
+ Args	: $file_path A valid file path to the settings file.
+ Note	: This argument only works in primer3 version 2 or above.
+ 
+=cut
+
+sub p3_settings_file{
+	my ($self, $file_path)=@_;
+        if ($self->version()=~/^2/){ #version check
+            if ($file_path){$self->{'p3_settings_file'}=$file_path;}
+            if ($self->{'p3_settings_file'}){return $self->{'p3_settings_file'};}
+        }
+        else {$self->warn("p3_settings_file is only available on primer3 release 2 or above.")}
+}
+
 =head2 run
 
  Title   : run
@@ -589,26 +620,46 @@ sub reset_parameters {
 
 sub run {
 	my($self, @seqs) = @_;
+        my @exec_array;
 	my $executable = $self->executable;
-    my $out = $self->outfile_name;
+        my $arguments = ''; #variable to hole run-time arguments
+        my $out = $self->{'outfile'};
 	unless ($executable && -e $executable) {
 		$self->throw("Executable was not found. Do not know where primer3 is!") if !$executable;
 		$self->throw("$executable was not found. Do not know where primer3 is!");
 		exit(-1);
 	}
 
+    push (@exec_array, $executable);
+    
     my %params = $self->get_parameters;
     
     my $file = $self->_generate_input_file(\%params, \@seqs);
 
-    my $str = "$executable < $file";
+    if($self->version=~/^2/){
+        if ($self->p3_settings_file()){push (@exec_array, "-p3_settings_file=". $self->p3_settings_file());}
+        if ($self->{'verbose'}){ 
+            push (@exec_array, "-echo_settings_file");
+        }
+    }
+    
+    my $str;
+    foreach (@exec_array){$str.=$_." ";} #"$executable $arguments < $file";
     
     my $obj = Bio::Tools::Primer3Redux->new(-verbose => $self->verbose);
+
+    my $status;
     my @args;
     # file output
     if ($out) {
-        $str .= " > $out";
+        if($self->version=~/^2/){
+            $str.= "-output=".$out. " <". $file;
+            $status=system ($str);
+        }
+        else {
+            $str .= "< $file > $out";
         my $status = system($str);
+        }
         if($status || !-e $out || -z $out ) {
             my $error = ($!) ? "$! Status: $status" : "Status: $status";
             $self->throw( "Primer3 call crashed: $error \n[command $str]\n");
@@ -620,9 +671,10 @@ sub run {
         }
     # fh-based (no outfile)
     } else {
-        open(my $fh,"$str |") || $self->throw("Primer3 call ($str) crashed: $?\n");
+        $str.=' <'. $file;
+        open(my $fh,$str."|") || $self->throw("Primer3 call ($str) crashed: $?\n");
         if ($obj && ref($obj)) {
-            $obj->fh($fh);
+            $obj->_fh($fh);
             @args = (-fh => $fh);
         } else {
             # dump to debugging
@@ -681,7 +733,7 @@ sub _generate_input_file {
     
     for my $data (@seqdata) {
         my $str = join("\n", map { "$_=".$data->{$_}} sort keys %$data)."\n$string";
-        $self->debug("TRYING\n$str");
+        if($self->{'verbose'}){$self->debug("TRYING\n$str");}
         print $tmpfh $str;
     }
     
