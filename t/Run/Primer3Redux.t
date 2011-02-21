@@ -12,12 +12,11 @@ use Bio::SeqIO;
 
 BEGIN {
     use Bio::Root::Test;
-    test_begin( -tests => 53,);
+    # num tests: see SKIP block for requires_executable
+    # + 5 before the block
+    test_begin( -tests => 69,);
     use_ok('Bio::Tools::Run::Primer3Redux');   
 }
-
-# These tests only make sense if we can run primer3
-
 
 my ($seqio, $seq, $primer3, $args, $results, $num_results);
 $seqio = Bio::SeqIO->new(-file => test_input_file('Primer3.fa'));
@@ -26,9 +25,13 @@ $seq = $seqio->next_seq;
 
 # Define sets of parameters and expected results
 # note: these are v2 parameters
+# !!! When adding a new test, update the number of tests 
+# to skip in the first SKIP block and in the BEGIN
+# block
 my @tests = (
   {
     desc   => "pick PCR primers with minimum product size range",
+    p3_version => 2,
     params => {
       'PRIMER_TASK'               => 'pick_pcr_primers',
       'PRIMER_SALT_CORRECTIONS'   => 1,
@@ -43,7 +46,23 @@ my @tests = (
   },
 
   {
+    desc   => "pick PCR primers with minimum product size range (for primer3 v1)",
+    p3_version => 1,
+    params => {
+      'PRIMER_TASK'               => 'pick_pcr_primers',
+      'PRIMER_SALT_CORRECTIONS'   => 1,
+      'PRIMER_PRODUCT_SIZE_RANGE' => '100-250',
+      'PRIMER_EXPLAIN_FLAG'       => 1,
+    },
+    expect => { 
+      num_pairs => 4,
+      loc_pair => [66,168],
+    }
+  },
+
+  {
     desc   => "make design fail due to very strict constraints",
+    p3_version => 2,
     params => {
       'PRIMER_MAX_POLY_X'     => 3,    # no runs of more than 2 of same nuc
       'PRIMER_MIN_TM'         => 55,
@@ -57,6 +76,7 @@ my @tests = (
 
   {
     desc => "use PRIMER_PAIR_OK_REGION_LIST (new feature in primer3 v2.x)",
+    p3_version => 2,
     params => {
       'PRIMER_TASK'                         => 'pick_pcr_primers',
       'PRIMER_SALT_CORRECTIONS'             => 1,
@@ -76,71 +96,86 @@ my @tests = (
 
 ok( $primer3 = Bio::Tools::Run::Primer3Redux->new(), "can instantiate object");
 like( $primer3->program_name, qr/primer3/, 'program_name');
+my ($major_version) = ($primer3->version=~/^(\d+)/);
+if ( $major_version < 2 ){
+    note ( '++++++++++++++++++++++++++++++++++++++++++');
+    note ( "+ Using primer3 version $major_version.x");
+    note ( '+ Some features may not work well.      ');
+    note ( '+ It is recommended to update to primer3');
+    note ( '+ verion 2.0 or later.                  ');
+    note ( '++++++++++++++++++++++++++++++++++++++++++');
+}
 
 SKIP: {
     test_skip(
         -requires_executable => $primer3,
-        -tests => 48, # @test * 16 
+        -tests => 64, # @test * 16 
     );
 
     # now run the individual tests for each block in the
     # @tests array.
-    $primer3 = Bio::Tools::Run::Primer3Redux->new();
     foreach my $test (@tests) {
-      note( 'Test parameter set for: ' . $test->{desc} );
-      ok( $primer3 = Bio::Tools::Run::Primer3Redux->new());
-      $primer3->set_parameters( %{ $test->{params} } );
-      ok( my $parser = $primer3->run($seq), "Can run primer3");
+        note( 'Test parameter set for: ' . $test->{desc} );
+        ok( $primer3 = Bio::Tools::Run::Primer3Redux->new()  ); 
+        my $required_version = $test->{p3_version} ||0 ;
+        SKIP:{
+            skip ("tests for primer3 major version $required_version", 15) if $required_version != $major_version;  
 
-      while ( my $result = $parser->next_result ) {
-        isa_ok( $result, 'Bio::Tools::Primer3Redux::Result' );
-        my $num_pairs = $test->{expect}{num_pairs};
-        is( $result->num_primer_pairs, $num_pairs, "Got expected number of pairs: " . $num_pairs );
+            $primer3->set_parameters( %{ $test->{params} } );
+            ok( my $parser = $primer3->run($seq), "Can run primer3");
 
-        SKIP: {
-            skip("no primer pair expected",12) if $num_pairs == 0;
-            my $pair = $result->next_primer_pair;
-            isa_ok( $pair, 'Bio::Tools::Primer3Redux::PrimerPair' );
-            isa_ok( $pair, 'Bio::SeqFeature::Generic' );
+            while ( my $result = $parser->next_result ) {
+              isa_ok( $result, 'Bio::Tools::Primer3Redux::Result' );
+              my $num_pairs = $test->{expect}{num_pairs};
+              is( $result->num_primer_pairs, $num_pairs, "Got expected number of pairs: " . $num_pairs );
 
-            my ( $fp, $rp ) = ( $pair->forward_primer, $pair->reverse_primer );
+              SKIP: {
+                  skip("tests that require >0 primer pairs",12) if $result->num_primer_pairs == 0;
+                  my $pair = $result->next_primer_pair;
+                  isa_ok( $pair, 'Bio::Tools::Primer3Redux::PrimerPair' );
+                  isa_ok( $pair, 'Bio::SeqFeature::Generic' );
 
-            # can't really do exact checks here, but we can certainly check
-            # various things about these...
-            isa_ok( $fp, 'Bio::Tools::Primer3Redux::Primer' );
-            isa_ok( $fp, 'Bio::SeqFeature::Generic' );
-            isa_ok( $rp, 'Bio::Tools::Primer3Redux::Primer' );
-            isa_ok( $rp, 'Bio::SeqFeature::Generic' );
-            like( $fp->seq->seq, qr/^[ACGTN]+$/, "forward primer contains sequence");
-            like( $rp->seq->seq, qr/^[ACGTN]+$/, "reverse primer contains sequence");
-            cmp_ok( length( $fp->seq->seq ), '>', 18, "fwd primer length >18" );
-            cmp_ok( length( $rp->seq->seq ), '>', 18, "rev primer length >18" );
+                  my ( $fp, $rp ) = ( $pair->forward_primer, $pair->reverse_primer );
 
-            # If a location for the pair is provided in the expectation
-            # check it here. This is useful to check that some of
-            # the parameters (such as region contraints) have been
-            # passed on to primer3 correctly
-            SKIP: {
-                skip("no location given",2) if ! defined $test->{expect}{loc_pair};
-                my ($start,$end) = @{$test->{expect}{loc_pair}};
-                is( $pair->start, $start, "primer pair start position is correct");
-                is( $pair->end, $end, "primer pair end position is correct");
+                  # can't really do exact checks here, but we can certainly check
+                  # various things about these...
+                  isa_ok( $fp, 'Bio::Tools::Primer3Redux::Primer' );
+                  isa_ok( $fp, 'Bio::SeqFeature::Generic' );
+                  isa_ok( $rp, 'Bio::Tools::Primer3Redux::Primer' );
+                  isa_ok( $rp, 'Bio::SeqFeature::Generic' );
+                  like( $fp->seq->seq, qr/^[ACGTN]+$/, "forward primer contains sequence");
+                  like( $rp->seq->seq, qr/^[ACGTN]+$/, "reverse primer contains sequence");
+                  cmp_ok( length( $fp->seq->seq ), '>', 18, "fwd primer length >18" );
+                  cmp_ok( length( $rp->seq->seq ), '>', 18, "rev primer length >18" );
+
+                  # If a location for the pair is provided in the expectation
+                  # check it here. This is useful to check that some of
+                  # the parameters (such as region contraints) have been
+                  # passed on to primer3 correctly
+                  SKIP: {
+                      skip("no location given",2) if ! defined $test->{expect}{loc_pair};
+                      my ($start,$end) = @{$test->{expect}{loc_pair}};
+                      is( $pair->start, $start, "primer pair start position is correct");
+                      is( $pair->end, $end, "primer pair end position is correct");
+                  }
+              } # skip if 0 pairs
             }
-        } # skip if 0 pairs
-      }
-    }
+          } # skip if wrong version
+        } # each test
 
-    # test the primer3 settings file with the first set of
-    # parameters. The settigns file sets min Tm to 70, so 
-    # if it was applied then this design should fail now
-    my $settings_file = test_input_file( 'primer3_settings.txt');
-    $primer3 = Bio::Tools::Run::Primer3Redux->new( -p3_settings_file => $settings_file);
-    $primer3->set_parameters( %{ $tests[0]->{params} } );
-    ok( my $parser = $primer3->run($seq), "Can run primer3 with p3_settings_file");
-    my $result = $parser->next_result;
-    is ($result->num_primer_pairs, 0, "strict global PRIMER params in p3_settings_file successfully applied and cause design to fail");
+        # test the primer3 settings file with the first set of
+        # parameters. The settigns file sets min Tm to 70, so 
+        # if it was applied then this design should fail now
+        SKIP: { 
+            skip ("tests for primer3_setting_file which require primer3 v2.x",2) if $major_version < 2;
+            my $settings_file = test_input_file( 'primer3_settings.txt');
+            $primer3 = Bio::Tools::Run::Primer3Redux->new( -p3_settings_file => $settings_file );
+            $primer3->set_parameters( %{ $tests[0]->{params} } );
+            ok( my $parser = $primer3->run($seq), "Can run primer3 with p3_settings_file");
+            my $result = $parser->next_result;
+            is ($result->num_primer_pairs, 0, "strict global PRIMER params in p3_settings_file successfully applied and cause design to fail");
 
-    
+        }
 
 } # skip if no executable
 
