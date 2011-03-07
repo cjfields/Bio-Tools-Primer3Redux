@@ -14,7 +14,7 @@ BEGIN {
     use Bio::Root::Test;
     # num tests: see SKIP block for requires_executable
     # + 5 before the block
-    test_begin( -tests => 69,);
+    test_begin( -tests => 72,);
     use_ok('Bio::Tools::Run::Primer3Redux');   
 }
 
@@ -109,7 +109,7 @@ if ( $major_version < 2 ){
 SKIP: {
     test_skip(
         -requires_executable => $primer3,
-        -tests => 64, # @test * 16 
+        -tests => 68, # @test * 17 
     );
 
     # now run the individual tests for each block in the
@@ -128,6 +128,8 @@ SKIP: {
               isa_ok( $result, 'Bio::Tools::Primer3Redux::Result' );
               my $num_pairs = $test->{expect}{num_pairs};
               is( $result->num_primer_pairs, $num_pairs, "Got expected number of pairs: " . $num_pairs );
+              my $ps = $result->get_processed_seq; 
+              isa_ok($ps, 'Bio::Seq');
 
               SKIP: {
                   skip("tests that require >0 primer pairs",12) if $result->num_primer_pairs == 0;

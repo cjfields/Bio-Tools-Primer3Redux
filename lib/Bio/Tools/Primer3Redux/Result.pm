@@ -35,11 +35,10 @@ default is the one returned in the Primer3 results, but one can pass in a
 (more-SeqFeature/Annotation-rich) version as a Bio::Seq using attach_seq() (see
 below for more on this).
 
-As mentioned above, one can either use the default Bio::Seq generated from the
-Primer3 results, or pass in a more richly decorated version to add more features
-to. This parser will attach any lazily-generated features to it. The sequence
-can be retrieved via get_seq() at any point, such as prior to the end of a
-parse). To retrieve a sequence guaranteed to have all Primer/PrimerPair data
+This parser will attach any lazily-generated features to that Bio::Seq object.
+The sequence can be retrieved via get_seq() at any point, such as prior to 
+the end of a parse). 
+To retrieve a sequence guaranteed to have all Primer/PrimerPair data
 attached, use get_processed_seq(). Switching seqs will cause a new batch of
 features to be generated and attached.
 
@@ -180,7 +179,7 @@ sub get_processed_seq {
     # Run out primer pair first, then others
     for my $it_type (qw(PAIR LEFT RIGHT INTERNAL)) {
         my $it = $self->_generate_iterator($it_type);
-        while (my $sf = $it->()) {}
+        while (my $sf = $it->($self)) {}
     }
     return $self->get_seq();
 }
