@@ -21,7 +21,7 @@ from the program primer3
   my $seqio = Bio::SeqIO->new(-file=>'data/dna1.fa');
   my $seq = $seqio->next_seq;
 
-  my $primer3 = Bio::Tools::Run::Primer3->new(-outfile => "temp.out",
+  my $primer3 = Bio::Tools::Run::Primer3Redux->new(-outfile => "temp.out",
                                             -path => "/usr/bin/primer3_core");
 
   # or after the fact you can change the program_name
@@ -623,7 +623,7 @@ sub run {
         my @exec_array;
 	my $executable = $self->executable;
         my $arguments = ''; #variable to hole run-time arguments
-        my $out = $self->{'outfile'};
+        my $out = $self->outfile_name;
 	unless ($executable && -e $executable) {
 		$self->throw("Executable was not found. Do not know where primer3 is!") if !$executable;
 		$self->throw("$executable was not found. Do not know where primer3 is!");
