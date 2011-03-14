@@ -430,11 +430,11 @@ sub _generate_primer {
     my ($ft, $seq, $instance) = @_;
     my ($type, $loc) = (delete($ft->{type}), delete($ft->{location}));
     
-    # TODO: There is data showing up here that doesn't have locations
-    #unless (defined $loc) {
-    #    print STDERR (caller(0))[3].":".Dumper $ft;
-    #    return ;
-    #}
+    # TODO: There is data showing up here that doesn't have locations, traceback
+    if (!defined($loc)) {
+        #print STDERR (caller(1))[3].":".Dumper $ft;
+        return ;
+    }
     
     my $rank = $ft->{rank};
     my $strand = $type eq 'right' ? -1 : 1;
@@ -465,9 +465,13 @@ sub _generate_pair {
     my ($ft, $seq, $instance) = @_;
     # some combinations of parameters do not return proper pairings,
     # so punt and return
-    return if (!exists $ft->{PAIR} || !exists $ft->{PAIR}->{num_returned} || $ft->{PAIR}->{num_returned} == 0);
+    return if (!exists $ft->{PAIR} ||
+               !exists $ft->{PAIR}->{num_returned} ||
+               $ft->{PAIR}->{num_returned} == 0);
+    
     my $pair = delete $ft->{PAIR};
     my $rank = $pair->{rank};    
+    
     $pair = Bio::Tools::Primer3Redux::PrimerPair->new(-tag => $pair);
     
     for my $type (sort keys %$ft) {
