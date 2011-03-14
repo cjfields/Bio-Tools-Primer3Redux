@@ -91,7 +91,7 @@ use base qw(Bio::Root::Root);
 use Bio::Seq;
 use Bio::Tools::Primer3Redux::Primer;
 use Bio::Tools::Primer3Redux::PrimerPair;
-
+use Data::Dumper;
 use Scalar::Util qw(reftype blessed);
 
 =head2 new
@@ -180,7 +180,7 @@ sub get_processed_seq {
     # Run out primer pair first, then others
     for my $it_type (qw(PAIR LEFT RIGHT INTERNAL)) {
         my $it = $self->_generate_iterator($it_type);
-        while (my $sf = $it->()) {}
+        while (my $sf = $it->($self)) {}
     }
     return $self->get_seq();
 }
@@ -429,6 +429,13 @@ sub _generate_iterator {
 sub _generate_primer {
     my ($ft, $seq, $instance) = @_;
     my ($type, $loc) = (delete($ft->{type}), delete($ft->{location}));
+    
+    # TODO: There is data showing up here that doesn't have locations
+    #unless (defined $loc) {
+    #    print STDERR (caller(0))[3].":".Dumper $ft;
+    #    return ;
+    #}
+    
     my $rank = $ft->{rank};
     my $strand = $type eq 'right' ? -1 : 1;
     my ($start, $len) = split(',', $loc);
