@@ -7,7 +7,6 @@ lib/Bio/Tools/Primer3Redux/Result.pm
 lib/Bio/Tools/Run/Primer3Redux.pm
 MANIFEST			This list of files
 README
-t/boilerplate.t
 t/data/Primer3.fa
 t/load.t
 t/manifest.t
