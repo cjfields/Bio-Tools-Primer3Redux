@@ -53,13 +53,25 @@ SKIP: {
             
             if ($ct == 1) {
                 isa_ok($pair, 'Bio::Tools::Primer3Redux::PrimerPair');
+                my $plen = $pair->length;
+                ok($plen >= 100 && $plen <=250);
+                
                 isa_ok($pair, 'Bio::SeqFeature::Generic');
                 
                 isa_ok($fp, 'Bio::Tools::Primer3Redux::Primer');
                 isa_ok($rp, 'Bio::Tools::Primer3Redux::Primer');
                 
                 cmp_ok(length($fp->seq->seq), '>', 18);
+                cmp_ok($fp->gc_content, '>', 40);
+                cmp_ok($fp->melting_temp, '>', 50);
+                is($fp->oligo_type, '');
+                is($fp->run_description, 'considered 5, ok 5');
+                
                 cmp_ok(length($rp->seq->seq), '>', 18);
+                cmp_ok($rp->gc_content, '>', 40);
+                cmp_ok($rp->melting_temp, '>', 50);
+                is($rp->oligo_type, '');
+                is($rp->run_description, 'considered 5, ok 5');
             }
             
             is($pair_data{sprintf("%d-%d:%d-%d",$fp->start,$fp->end,
@@ -104,6 +116,6 @@ SKIP: {
     }
 }
 
-#unlink ('mlc') if -e 'mlc';
+unlink ('mlc') if -e 'mlc';
 
 done_testing();
