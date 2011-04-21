@@ -7,8 +7,7 @@
 
 =head1 NAME
 
-Bio::Tools::Primer3Redux - Create input for and work with the output from
-the program primer3.
+Bio::Tools::Primer3Redux - BioPerl-based tools for parsing Primer3 output
 
 =head1 SYNOPSIS
 

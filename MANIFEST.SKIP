@@ -67,3 +67,6 @@
 
 # Avoid archives of this distribution
 \bBio-Tools-Primer3Redux-[\d\.\_]+
+
+# other bits
+\ddist.ini$
