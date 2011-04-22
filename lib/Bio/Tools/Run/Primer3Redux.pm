@@ -15,7 +15,7 @@ from the program primer3
 
   # design some primers.
   # the output will be put into temp.out
-  use Bio::Tools::Run::Primer3;
+  use Bio::Tools::Run::Primer3Redux;
   use Bio::SeqIO;
 
   my $seqio = Bio::SeqIO->new(-file=>'data/dna1.fa');
@@ -36,24 +36,25 @@ from the program primer3
   $primer3->add_targets('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
 
   # design the primers. This runs primer3 and returns a 
-  # Bio::Tools::Primer3Parser object with the results
+  # Bio::Tools::Primer3::result object with the results
   $results = $primer3->run($seq);
 
-  # see the Bio::Tools::Primer3Parser pod for
+  # see the Bio::Tools::Primer3Redux POD for
   # things that you can get from this. For example:
 
-  print "There were ", $results->number_of_results, " primers\n";
+  print "There were ", $results->num_primer_pairs, " primer pairs\n";
 
 =head1 DESCRIPTION
 
-Bio::Tools::Run::Primer3 creates the input files needed to design primers
+Bio::Tools::Run::Primer3Redux creates the input files needed to design primers
 using primer3 and provides mechanisms to access data in the primer3
 output files.
 
-This module is largely a streamlined refactoring of the original Primer3 module
-written by Rob Edwards. See http://primer3.sourceforge.net for details and to
-download the software. This module should work for primer3 release 1 and above
-but is not guaranteed to work with earlier versions.
+This module a refactoring of the original BioPerl primer3 tools, themselves a
+refactoring of the original Primer3 module written by Rob Edwards. See
+http://primer3.sourceforge.net for details and to download the software. This
+module should work for primer3 release 1 and above but is not guaranteed to work
+with earlier versions.
 
 =head1 FEEDBACK
 

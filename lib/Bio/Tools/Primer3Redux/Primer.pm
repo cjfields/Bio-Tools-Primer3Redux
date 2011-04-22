@@ -37,7 +37,9 @@ validating primer seq against attached sequence, etc.
 
 This class is a simple subclass of Bio::SeqFeature::Generic that adds
 convenience accessor methods for primer-specific data, such as Tm, GC content,
-and other interesting bits of information returned from Primer3.
+and other interesting bits of information returned from Primer3.  Beyond that,
+the data can be persisted just as any Bio::SeqFeatureI; it doesn't add any
+additional primary attributes that may not be persisted effectively.
 
 =head1 FEEDBACK
 

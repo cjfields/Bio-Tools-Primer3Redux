@@ -1,7 +1,7 @@
 #-*-Perl-*-
 ## $Id: Primer3.t 15574 2009-02-25 13:49:22Z cjfields $
 
-# tests for Bio::Tools::Run::Primer3Rerdux
+# tests for Bio::Tools::Run::Primer3Redux
 # originally written for Bio::Tools::Run::Primer3 by Rob Edwards
 
 use strict;
