@@ -28,8 +28,7 @@ my %params = (
 );
 
 SKIP: {
-    test_skip(-requires_executable => $primer3,
-              -tests => 6);
+    test_skip(-requires_executable => $primer3);
     like( $primer3->program_name, qr/primer3/, 'program_name');
 
     # note: these are v2 parameters
