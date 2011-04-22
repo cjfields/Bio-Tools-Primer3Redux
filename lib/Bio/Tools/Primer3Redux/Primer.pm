@@ -89,19 +89,34 @@ use base qw(Bio::SeqFeature::Generic);
 
  Title    : oligo_type
  Usage    : $obj->oligo_type
- Function : 
- Returns  : 
- Args     : 
-
+ Function : get/set the oligo type
+ Returns  : the oligo type (forward_primer, reverse_primer, internal_oligo)
+ Args     : optional string
+ Note     : simple alias for primary_tag
+ 
 =cut
 
 sub oligo_type {
-	my ($self, $type) = @_;
-	if (defined $type) {
-		$self->remove_tag('type') if $self->has_tag('type');
-		$self->add_tag_value('type', $type);
+    shift->primary_tag(@_);
+}
+
+=head2 rank
+
+ Title    : rank
+ Usage    : $obj->rank
+ Function : get/set the rank
+ Returns  : rank
+ Args     : optional string
+ 
+=cut
+
+sub rank {
+    my ($self, $rank) = @_;
+	if (defined $rank) {
+		$self->remove_tag('rank') if $self->has_tag('rank');
+		$self->add_tag_value('rank', $rank);
 	}
-	$self->has_tag('type') ? return ($self->get_tag_values('type'))[0] : return;
+	$self->has_tag('rank') ? return ($self->get_tag_values('rank'))[0] : return;
 }
 
 =head2 validate_seq

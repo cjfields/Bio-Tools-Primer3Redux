@@ -27,7 +27,6 @@ Bio::Tools::Primer3Redux::Result - Result class for Primer3 data
         say $rp->seq->seq;
     }
 
-
 =head1 DESCRIPTION
 
 This is a simple holder class for Primer3 sequence results. The sequence used by
@@ -484,6 +483,8 @@ sub _generate_pair {
     return $pair;
 }
 
+# a fallback Bio::SeqI in case the parser is called directly (not from the
+# wrapper)
 sub _create_default_seq {
     my $self = shift;
     return Bio::Seq->new(-seq => $self->{sequence_data}{SEQUENCE_TEMPLATE} ||

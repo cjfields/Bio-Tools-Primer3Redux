@@ -23,7 +23,6 @@ my %params = (
         'PRIMER_TASK'               => 'pick_pcr_primers',
         'PRIMER_SALT_CORRECTIONS'   => 1,              # optimizations
         'PRIMER_TM_FORMULA'         => 1,
-    
         'PRIMER_PRODUCT_SIZE_RANGE' => '100-250',      # size
         'PRIMER_EXPLAIN_FLAG'       => 1,              # if there are errors...
 );
@@ -50,27 +49,30 @@ SKIP: {
         while (my $pair = $result->next_primer_pair) {
             $ct++;
             my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
+            my $plen = $pair->length;
+            ok($plen >= 100 && $plen <=250, "product size correct: 100bp <= $plen <= 250bp");
             
             if ($ct == 1) {
                 isa_ok($pair, 'Bio::Tools::Primer3Redux::PrimerPair');
-                my $plen = $pair->length;
-                ok($plen >= 100 && $plen <=250);
-                
-                isa_ok($pair, 'Bio::SeqFeature::Generic');
+                isa_ok($pair, 'Bio::SeqFeatureI');
                 
                 isa_ok($fp, 'Bio::Tools::Primer3Redux::Primer');
+                isa_ok($fp, 'Bio::SeqFeatureI');
+                
                 isa_ok($rp, 'Bio::Tools::Primer3Redux::Primer');
                 
-                cmp_ok(length($fp->seq->seq), '>', 18);
+                cmp_ok($fp->seq->length, '>', 18, "Length:".$fp->seq->length);
                 cmp_ok($fp->gc_content, '>', 40);
                 cmp_ok($fp->melting_temp, '>', 50);
-                is($fp->oligo_type, '');
+                is($fp->oligo_type, 'forward_primer');
+                is($fp->rank, 0);
                 is($fp->run_description, 'considered 5, ok 5');
                 
-                cmp_ok(length($rp->seq->seq), '>', 18);
+                cmp_ok($rp->seq->length, '>', 18);
                 cmp_ok($rp->gc_content, '>', 40);
                 cmp_ok($rp->melting_temp, '>', 50);
-                is($rp->oligo_type, '');
+                is($rp->oligo_type, 'reverse_primer');
+                is($rp->rank, 0);
                 is($rp->run_description, 'considered 5, ok 5');
             }
             
@@ -78,8 +80,6 @@ SKIP: {
                                   $rp->start, $rp->end)}++,
                0);
         }
-        
-        diag(Dumper \%pair_data) if $verbose;
         
         is(scalar(keys %pair_data), 5);
         
@@ -116,6 +116,6 @@ SKIP: {
     }
 }
 
-unlink ('mlc') if -e 'mlc';
+#unlink ('mlc') if -e 'mlc';
 
 done_testing();
