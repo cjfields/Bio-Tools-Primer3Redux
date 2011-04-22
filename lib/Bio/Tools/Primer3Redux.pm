@@ -137,6 +137,7 @@ sub next_result {
     
     $self->start_document;
     
+    my $highest_rank_pair ; # to keep track of number of pairs for v1.x output
     while (my $line = $self->_readline) {
         last if index($line, '=') == 0;
         chomp $line;
@@ -147,6 +148,9 @@ sub next_result {
                 ($primer_tag, $rank) = ($1, $2);
             }
             $rank ||= 0;
+            if ($type eq 'PAIR' && ( !defined $highest_rank_pair || $rank > $highest_rank_pair )){
+              $highest_rank_pair = $rank;
+            }
             $type = 'INTERNAL' if $type eq 'INTERNAL_OLIGO';
             # indicates location information
             $primer_tag ||= 'LOCATION';
@@ -167,6 +171,12 @@ sub next_result {
         } 
     }
     
+    # version 1.x output doesn't have a NUM_RETURNED tag, so if we haven't
+    # yet populated the num_returned data then do it now
+    # In version 1.x, pair numbers start with 1, not zero
+    if ( ! defined $self->{persistent}->{PAIR}->{num_returned} ){
+       $self->{persistent}->{PAIR}->{num_returned} = $highest_rank_pair;
+    }
     my $doc = $self->end_document;
     
     return $doc;

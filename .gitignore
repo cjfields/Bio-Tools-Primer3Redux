@@ -11,3 +11,7 @@ cover_db
 pod2htm*.tmp
 Bio-Tools-Primer3Redux-*
 *.komodoproject
+MYMETA.yml
+SEQUENCE_TEMPLATE.for
+SEQUENCE_TEMPLATE.rev
+*.swp
