@@ -214,4 +214,6 @@ SKIP: {
 
 }    # skip if no executable
 
+unlink('mlc') if -e 'mlc';
+
 done_testing();
