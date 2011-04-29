@@ -17,7 +17,7 @@ Bio::Tools::Primer3Redux - BioPerl-based tools for parsing Primer3 output
 
  # read a primer3 output file
  my $p3 = Bio::Tools::Primer3Redux->new(-file=>"data/primer3_output.txt");
- 
+
  # iterate through each result in the file
  while (my $result = $p3->next_result) {
     # iterate through each primer pair
@@ -52,15 +52,15 @@ of the Bioperl mailing lists.  Your participation is much appreciated.
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
 
-=head2 Support 
- 
+=head2 Support
+
 Please direct usage questions or support issues to the mailing list:
-  
+
 L<bioperl-l@bioperl.org>
-  
-rather than to the module maintainer directly. Many experienced and 
-reponsive experts will be able look at the problem and quickly 
-address it. Please include a thorough description of the problem 
+
+rather than to the module maintainer directly. Many experienced and
+reponsive experts will be able look at the problem and quickly
+address it. Please include a thorough description of the problem
 with code and data examples if at all possible.
 
 =head2 Reporting Bugs
@@ -125,18 +125,18 @@ use base qw(Bio::Root::IO Bio::AnalysisParserI);
   Usage    : $obj->next_result
   Function : Returns the next Bio::Tools::Primer3Redux::Result instance (if one)
   Returns  : Bio::Tools::Primer3Redux::Result || undef
-  Args     : none 
+  Args     : none
   Status   : stable
- 
+
 =cut
 
 {
 
 sub next_result {
-	my $self = shift;
-    
+    my $self = shift;
+
     $self->start_document;
-    
+
     my $highest_rank_pair ; # to keep track of number of pairs for v1.x output
     while (my $line = $self->_readline) {
         last if index($line, '=') == 0;
@@ -166,11 +166,11 @@ sub next_result {
             $self->{features}->{$rank}->{$type}->{lc $primer_tag} = $data;
         } elsif ($tag =~ /^(?:PRIMER_)?SEQUENCE(?:_(?:ID|TEMPLATE))?$/ )  {
             $self->{sequence}->{$tag} = $data;
-        } else{ # anything else 
+        } else{ # anything else
             $self->{run_parameters}->{$tag} = $data;
-        } 
+        }
     }
-    
+
     # version 1.x output doesn't have a NUM_RETURNED tag, so if we haven't
     # yet populated the num_returned data then do it now
     # In version 1.x, pair numbers start with 1, not zero
@@ -178,7 +178,7 @@ sub next_result {
        $self->{persistent}->{PAIR}->{num_returned} = $highest_rank_pair;
     }
     my $doc = $self->end_document;
-    
+
     return $doc;
 }
 
@@ -216,7 +216,7 @@ sub end_document {
     my $result;
     if (defined $self->{sequence} || defined $self->{features}) {
         $result = Bio::Tools::Primer3Redux::Result->new();
-        
+
         # data is created on the fly within the result
         $result->_initialize(-seq             => $self->{sequence},
                              -features        => $self->{features},
@@ -229,4 +229,3 @@ sub end_document {
 1;
 
 __END__
-

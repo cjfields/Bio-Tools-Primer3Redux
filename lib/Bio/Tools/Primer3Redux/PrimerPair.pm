@@ -19,7 +19,7 @@ right primers, internal oligos, and any amplicon-related information
 
   # get the primer pair from the Bio::Tools::Primer3Redux::Result
   my $pair = $result->next_primer_pair;
-  
+
   # grab left/right primers
   my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
 
@@ -41,7 +41,7 @@ the Bioperl mailing list.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
-  
+
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
@@ -49,7 +49,7 @@ of the bugs and their resolution. Bug reports can be submitted via
 the web:
 
   http://bugzilla.open-bio.org/
-  
+
 =head1 AUTHOR - Chris Fields
 
   Email cjfields at bioperl dot org
@@ -85,7 +85,7 @@ use base qw(Bio::SeqFeature::Generic);
 =cut
 
 sub left_primer {
-	shift->forward_primer(@_);
+    shift->forward_primer(@_);
 }
 
 =head2 forward_primer
@@ -99,13 +99,13 @@ sub left_primer {
 =cut
 
 sub forward_primer {
-	my ($self, $primer) = @_;
-	if ($primer) {
-		$self->throw("Not a Primer object") unless $primer->isa('Bio:::Tools::Primer3Redux::Primer');
-		$self->add_SeqFeature($primer, 'EXPAND');
-	}
-	my ($for) = grep {$_->primary_tag eq 'forward_primer'} $self->get_SeqFeatures;
-	return $for;
+    my ($self, $primer) = @_;
+    if ($primer) {
+        $self->throw("Not a Primer object") unless $primer->isa('Bio:::Tools::Primer3Redux::Primer');
+        $self->add_SeqFeature($primer, 'EXPAND');
+    }
+    my ($for) = grep {$_->primary_tag eq 'forward_primer'} $self->get_SeqFeatures;
+    return $for;
 }
 
 =head2 right_primer
@@ -128,13 +128,13 @@ sub right_primer { shift->reverse_primer(@_)}
 =cut
 
 sub reverse_primer {
-	my ($self, $primer) = @_;
-	if ($primer) {
-		$self->throw("Not a Primer object") unless $primer->isa('Bio:::Tools::Primer3Redux::Primer');
-		$self->add_SeqFeature($primer, 'EXPAND');
-	}
-	my ($rev) = grep {$_->primary_tag eq 'reverse_primer'} $self->get_SeqFeatures;
-	return $rev;
+    my ($self, $primer) = @_;
+    if ($primer) {
+        $self->throw("Not a Primer object") unless $primer->isa('Bio:::Tools::Primer3Redux::Primer');
+        $self->add_SeqFeature($primer, 'EXPAND');
+    }
+    my ($rev) = grep {$_->primary_tag eq 'reverse_primer'} $self->get_SeqFeatures;
+    return $rev;
 }
 
 =head2 internal_oligo
@@ -148,16 +148,16 @@ sub reverse_primer {
 =cut
 
 sub internal_oligo {
-	my ($self, $primer) = @_;
-	if ($primer) {
-		$self->throw("Not a Primer object") unless $primer->isa('Bio:::Tools::Primer3Redux::Primer');
-		# Note this doesn't expand to fit; the assumption is this is added
-		# after forward/reverse primers are added and acts to ensure the
-		# oligo is actually internal to the fragment (otherwise it throws)
-		$self->add_SeqFeature($primer);
-	}
-	my ($oligo) = grep {$_->primary_tag eq 'ss_oligo'} $self->get_SeqFeatures;
-	return $oligo;	
+    my ($self, $primer) = @_;
+    if ($primer) {
+        $self->throw("Not a Primer object") unless $primer->isa('Bio:::Tools::Primer3Redux::Primer');
+        # Note this doesn't expand to fit; the assumption is this is added
+        # after forward/reverse primers are added and acts to ensure the
+        # oligo is actually internal to the fragment (otherwise it throws)
+        $self->add_SeqFeature($primer);
+    }
+    my ($oligo) = grep {$_->primary_tag eq 'ss_oligo'} $self->get_SeqFeatures;
+    return $oligo;
 }
 
 1;

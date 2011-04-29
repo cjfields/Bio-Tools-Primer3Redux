@@ -18,21 +18,21 @@ validating primer seq against attached sequence, etc.
 =head1 SYNOPSIS
 
  # get the Bio::Tools::Primer3Redux::Primer through Bio::Tools::Primer3Redux...
- 
+
  # dies with an error if no sequence is attached, or if sequence region
  # does not match cached sequence from Primer3.  Useful if decorating an already
  # generated Bio::Seq with primers.
- 
+
  $primer->validate_seq;
- 
+
  my $seq = $primer->seq; # Bio::Seq object
  if ($primer->melting_temp < 55) {
-	warn "Primer ".$primer->display_name." is below optimal temp";
+    warn "Primer ".$primer->display_name." is below optimal temp";
  }
- 
+
  # if primer3 EXPLAIN settings are used...
  print "Run parameters:".$primer->run_description."\n";
- 
+
 =head1 DESCRIPTION
 
 This class is a simple subclass of Bio::SeqFeature::Generic that adds
@@ -51,7 +51,7 @@ the Bioperl mailing list.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
-  
+
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
@@ -59,7 +59,7 @@ of the bugs and their resolution. Bug reports can be submitted via
 the web:
 
   http://bugzilla.open-bio.org/
-  
+
 =head1 AUTHOR - Chris Fields
 
   Email cjfields at bioperl dot org
@@ -95,7 +95,7 @@ use base qw(Bio::SeqFeature::Generic);
  Returns  : the oligo type (forward_primer, reverse_primer, internal_oligo)
  Args     : optional string
  Note     : simple alias for primary_tag
- 
+
 =cut
 
 sub oligo_type {
@@ -109,16 +109,16 @@ sub oligo_type {
  Function : get/set the rank
  Returns  : rank
  Args     : optional string
- 
+
 =cut
 
 sub rank {
     my ($self, $rank) = @_;
-	if (defined $rank) {
-		$self->remove_tag('rank') if $self->has_tag('rank');
-		$self->add_tag_value('rank', $rank);
-	}
-	$self->has_tag('rank') ? return ($self->get_tag_values('rank'))[0] : return;
+    if (defined $rank) {
+        $self->remove_tag('rank') if $self->has_tag('rank');
+        $self->add_tag_value('rank', $rank);
+    }
+    $self->has_tag('rank') ? return ($self->get_tag_values('rank'))[0] : return;
 }
 
 =head2 validate_seq
@@ -133,14 +133,14 @@ sub rank {
 =cut
 
 sub validate_seq {
-	my ($self) = shift;
-	my $cached = $self->has_tag('sequence') ? ($self->get_tag_values('sequence'))[0] : '';
-	my $seq = $self->seq->seq;
-	if ($cached ne $seq) {
-		$self->warn("Sequence [$seq] does not match predicted [$cached], check attached sequence");
-		return 0;
-	}
-	return 1;
+    my ($self) = shift;
+    my $cached = $self->has_tag('sequence') ? ($self->get_tag_values('sequence'))[0] : '';
+    my $seq = $self->seq->seq;
+    if ($cached ne $seq) {
+        $self->warn("Sequence [$seq] does not match predicted [$cached], check attached sequence");
+        return 0;
+    }
+    return 1;
 }
 
 =head2 melting_temp
@@ -154,12 +154,12 @@ sub validate_seq {
 =cut
 
 sub melting_temp {
-	my ($self, $tm) = @_;
-	if (defined $tm) {
-		$self->remove_tag('tm') if $self->has_tag('tm');
-		$self->add_tag_value('tm', $tm);
-	}
-	$self->has_tag('tm') ? return ($self->get_tag_values('tm'))[0] : return;
+    my ($self, $tm) = @_;
+    if (defined $tm) {
+        $self->remove_tag('tm') if $self->has_tag('tm');
+        $self->add_tag_value('tm', $tm);
+    }
+    $self->has_tag('tm') ? return ($self->get_tag_values('tm'))[0] : return;
 }
 
 =head2 gc_content
@@ -173,12 +173,12 @@ sub melting_temp {
 =cut
 
 sub gc_content {
-	my ($self, $gc) = @_;
-	if (defined $gc) {
-		$self->remove_tag('gc_percent') if $self->has_tag('gc_percent');
-		$self->add_tag_value('gc_percent', $gc);
-	}
-	$self->has_tag('gc_percent') ? return ($self->get_tag_values('gc_percent'))[0] : return;
+    my ($self, $gc) = @_;
+    if (defined $gc) {
+        $self->remove_tag('gc_percent') if $self->has_tag('gc_percent');
+        $self->add_tag_value('gc_percent', $gc);
+    }
+    $self->has_tag('gc_percent') ? return ($self->get_tag_values('gc_percent'))[0] : return;
 }
 
 =head2 run_description
@@ -192,12 +192,12 @@ sub gc_content {
 =cut
 
 sub run_description {
-	my ($self, $desc) = @_;
-	if (defined $desc) {
-		$self->remove_tag('explain') if $self->has_tag('explain');
-		$self->add_tag_value('explain', $desc);
-	}
-	$self->has_tag('explain') ? return ($self->get_tag_values('explain'))[0] : return;
+    my ($self, $desc) = @_;
+    if (defined $desc) {
+        $self->remove_tag('explain') if $self->has_tag('explain');
+        $self->add_tag_value('explain', $desc);
+    }
+    $self->has_tag('explain') ? return ($self->get_tag_values('explain'))[0] : return;
 }
 
 1;

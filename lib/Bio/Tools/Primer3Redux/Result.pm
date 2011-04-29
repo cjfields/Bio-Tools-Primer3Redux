@@ -18,11 +18,11 @@ Bio::Tools::Primer3Redux::Result - Result class for Primer3 data
 
     # parse a Primer3 report, and get Bio::Tools::Primer3Redux::Result
     while (my $result = $parser->next_result) {
-        say $result->num_primer_pairs; 
+        say $result->num_primer_pairs;
         my $pair = $result->next_primer_pair;
 
         my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
-        
+
         say $fp->seq->seq;
         say $rp->seq->seq;
     }
@@ -35,8 +35,8 @@ default is the one returned in the Primer3 results, but one can pass in a
 below for more on this).
 
 This parser will attach any lazily-generated features to that Bio::Seq object.
-The sequence can be retrieved via get_seq() at any point, such as prior to 
-the end of a parse). 
+The sequence can be retrieved via get_seq() at any point, such as prior to
+the end of a parse).
 To retrieve a sequence guaranteed to have all Primer/PrimerPair data
 attached, use get_processed_seq(). Switching seqs will cause a new batch of
 features to be generated and attached.
@@ -51,7 +51,7 @@ the Bioperl mailing list.  Your participation is much appreciated.
 
   bioperl-l@bioperl.org                  - General discussion
   http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
-  
+
 =head2 Reporting Bugs
 
 Report bugs to the Bioperl bug tracking system to help us keep track
@@ -59,7 +59,7 @@ of the bugs and their resolution. Bug reports can be submitted via
 the web:
 
   http://bugzilla.open-bio.org/
-  
+
 =head1 AUTHOR - Chris Fields
 
   Email cjfields at bioperl dot org
@@ -96,10 +96,10 @@ use Scalar::Util qw(reftype blessed);
 
  Title   : new
  Usage   : my $obj = new
- Function: Builds a new Bio::Tools::Primer3::Result object 
+ Function: Builds a new Bio::Tools::Primer3::Result object
  Returns : an instance of Bio::Tools::Primer3::Result
- Args    : 
- 
+ Args    :
+
 =cut
 
 sub _initialize {
@@ -116,12 +116,12 @@ sub _initialize {
 
  Title    : attach_seq
  Usage    : $obj->attach_seq
- Function : 
+ Function :
  Returns  : Bio::SeqI
  Args     : Bio::SeqI (warning: may or may not have primers attached)
  Note     : calling this method resets the feature iterators to prevent (for
             instance) issues with references
-            
+
 =cut
 
 sub attach_seq {
@@ -131,20 +131,20 @@ sub attach_seq {
         if (defined $seq) {
             $self->throw("Passed sequence must be a Bio::SeqI")
                 unless ( ref $seq && $seq->isa('Bio::SeqI') );
-        } 
+        }
         # this allows resetting seq() to use built-in report sequence
         $self->{using_seq} = $seq;
         $self->{reattach_sf} = 1;
-    } 
+    }
 }
 
 =head2 get_seq
 
  Title    : get_seq
  Usage    : $obj->get_seq
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -164,8 +164,8 @@ sub get_seq {
 
  Title    : get_processed_seq
  Usage    : $obj->get_processed_seq
- Function : 
- Returns  : 
+ Function :
+ Returns  :
  Args     :
  Note     : unlike get_seq(), this guarantees getting back the full
             sequence with attached Primer/PrimerPair SeqFeatureI
@@ -187,9 +187,9 @@ sub get_processed_seq {
 
  Title    : num_primer_pairs
  Usage    : $obj->num_primer_pairs
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -203,9 +203,9 @@ sub num_primer_pairs {
 
  Title    : next_left_primer
  Usage    : $obj->next_left_primer
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -221,9 +221,9 @@ sub next_left_primer {
 
  Title    : next_right_primer
  Usage    : $obj->next_right_primer
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -239,9 +239,9 @@ sub next_right_primer {
 
  Title    : next_internal_oligo
  Usage    : $obj->next_internal_oligo
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -257,9 +257,9 @@ sub next_internal_oligo {
 
  Title    : next_primer_pair
  Usage    : $obj->next_primer_pair
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -275,9 +275,9 @@ sub next_primer_pair {
 
  Title    : persistent_data
  Usage    : $obj->persistent_data
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -290,9 +290,9 @@ sub persistent_data {
 
  Title    : run_parameters
  Usage    : $obj->run_parameters
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -317,9 +317,9 @@ sub run_parameters {
 
  Title    : run_parameter
  Usage    : $obj->run_parameter('FOO')
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -333,9 +333,9 @@ sub run_parameter {
 
  Title    : rewind
  Usage    : $obj->rewind('primer_pair')
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
@@ -364,7 +364,7 @@ sub _generate_iterator {
         join(',', sort keys %VALID_ITERATORS)) unless
         (defined $it_type || !exists $VALID_ITERATORS{uc $it_type});
     $it_type = uc $it_type;
-    
+
     my $mth = $VALID_ITERATORS{$it_type};
 
     my $persistent_data = $self->{persistent_data}{$it_type};
@@ -372,10 +372,10 @@ sub _generate_iterator {
         map {$self->{feature_data}{$_}}           sort {$a <=> $b} keys %{$self->{feature_data}} :
         map {$self->{feature_data}{$_}{$it_type}} sort {$a <=> $b} keys %{$self->{feature_data}};
     my $ct = 0;
-    
+
     # for attaching the features
     my $seq = $self->get_seq;
-    
+
     return ($it_type eq 'PAIR') ?
         sub {
             my $instance = shift;
@@ -384,7 +384,7 @@ sub _generate_iterator {
             # return cached features if previously generated and seq already attached
             return $ft->{PAIR} if (blessed $ft->{PAIR} && $ft->{PAIR}->isa('Bio::SeqFeature::Generic')
                 && !$self->{reattach_sf});
-            
+
             # carry over persistent data
             for my $fkey (keys %{$ft}) {
                 $ft->{$fkey}{rank} = $ct;
@@ -399,7 +399,7 @@ sub _generate_iterator {
             $sf;
         } :
         sub {
-            my $instance = shift;            
+            my $instance = shift;
             # these are tags
             my $ft = shift @feat_data;
             return unless $ft;
@@ -408,12 +408,12 @@ sub _generate_iterator {
                 $ct++;
                 return $ft;
             }
-            
+
             # carry over persistent data
             for my $key (keys %{$persistent_data}) {
                 $ft->{$key} = $persistent_data->{$key};
             }
-            
+
             $ft->{rank} = $ct;
             $ft->{type} = lc $it_type;
             my $sf = $mth->($ft, $seq, $instance);
@@ -427,13 +427,13 @@ sub _generate_iterator {
 sub _generate_primer {
     my ($ft, $seq, $instance) = @_;
     my ($type, $loc) = (delete($ft->{type}), delete($ft->{location}));
-    
+
     # TODO: There is data showing up here that doesn't have locations, traceback
     if (!defined($loc)) {
         #print STDERR (caller(1))[3].":".Dumper $ft;
         return ;
     }
-    
+
     my $rank = $ft->{rank};
     my $strand = $type eq 'right' ? -1 : 1;
     my ($start, $len) = split(',', $loc);
@@ -453,7 +453,7 @@ sub _generate_primer {
                                                   -primary_tag  => $primary,
                                                   -tag          => $ft);
     $seq->add_SeqFeature($sf) if ($seq && blessed $seq && $seq->isa('Bio::SeqI'));
-    
+
     # cache Primer
     $instance->{feature_data}{$rank}{uc $type} = $sf;
     $sf;
@@ -466,19 +466,19 @@ sub _generate_pair {
     return if (!exists $ft->{PAIR} ||
                !exists $ft->{PAIR}->{num_returned} ||
                $ft->{PAIR}->{num_returned} == 0);
-    
+
     my $pair = delete $ft->{PAIR};
-    my $rank = $pair->{rank};    
-    
+    my $rank = $pair->{rank};
+
     $pair = Bio::Tools::Primer3Redux::PrimerPair->new(-tag => $pair);
-    
+
     for my $type (sort keys %$ft) {
         my $sf = _generate_primer($ft->{$type}, $seq, $instance);
         $pair->add_SeqFeature($sf, 'EXPAND');
     }
     $seq->add_SeqFeature($pair) if ($seq && blessed $seq && $seq->isa('Bio::SeqI'));
     # cache PrimerPair
-    $instance->{feature_data}{$rank}{PAIR} = $pair;    
+    $instance->{feature_data}{$rank}{PAIR} = $pair;
     return $pair;
 }
 
@@ -490,7 +490,7 @@ sub _create_default_seq {
                              $self->{sequence_data}{SEQUENCE} ,
                      -accession_number => $self->{sequence_data}{SEQUENCE_ID} ||
                                     $self->{sequence_data}{PRIMER_SEQUENCE_ID},
-                     -alphabet => 'dna');    
+                     -alphabet => 'dna');
 }
 
 1;

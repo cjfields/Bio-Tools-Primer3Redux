@@ -8,7 +8,7 @@
 
 =head1 NAME
 
-Bio::Tools::Run::Primer3Redux - Create input for and work with the output 
+Bio::Tools::Run::Primer3Redux - Create input for and work with the output
 from the program primer3
 
 =head1 SYNOPSIS
@@ -35,7 +35,7 @@ from the program primer3
   # set the maximum and minimum Tm of the primer
   $primer3->add_targets('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
 
-  # design the primers. This runs primer3 and returns a 
+  # design the primers. This runs primer3 and returns a
   # Bio::Tools::Primer3::result object with the results
   $results = $primer3->run($seq);
 
@@ -67,15 +67,15 @@ of the Bioperl mailing lists.  Your participation is much appreciated.
   bioperl-l@bioperl.org                  - General discussion
   http://www.bioperl.org/MailList.html             - About the mailing lists
 
-=head2 Support 
- 
+=head2 Support
+
 Please direct usage questions or support issues to the mailing list:
-  
+
 L<bioperl-l@bioperl.org>
-  
-rather than to the module maintainer directly. Many experienced and 
-reponsive experts will be able look at the problem and quickly 
-address it. Please include a thorough description of the problem 
+
+rather than to the module maintainer directly. Many experienced and
+reponsive experts will be able look at the problem and quickly
+address it. Please include a thorough description of the problem
 with code and data examples if at all possible.
 
 =head2 Reporting Bugs
@@ -110,7 +110,7 @@ L<Bio::Tools::Primer3>
 
 =head1 APPENDIX
 
-The rest of the documentation details each of the object methods. 
+The rest of the documentation details each of the object methods.
 Internal methods are usually preceded with a _
 
 =cut
@@ -132,13 +132,13 @@ my @P1;
 my @P2;
 
 # 2.0 is still in alpha (3/3/10), so fallback to v1 for determining parameters
-my $DEFAULT_VERSION = '1.1.4'; 
+my $DEFAULT_VERSION = '1.1.4';
 BEGIN {
     # $ct assigns order of parameter building
 @P1 = qw(
     PRIMER_SEQUENCE_ID
     SEQUENCE
-    TARGET   
+    TARGET
     EXCLUDED_REGION
     INCLUDED_REGION
     PRIMER_COMMENT
@@ -363,61 +363,61 @@ BEGIN {
 =head2 new()
 
  Title   : new()
- Usage   : my $primer3 = Bio::Tools::Run::Primer3->new(-file=>$file) to read 
+ Usage   : my $primer3 = Bio::Tools::Run::Primer3->new(-file=>$file) to read
            a primer3 output file.
-           my $primer3 = Bio::Tools::Run::Primer3->new(-seq=>sequence object) 
+           my $primer3 = Bio::Tools::Run::Primer3->new(-seq=>sequence object)
            design primers against sequence
- Function: Start primer3 working and adds a sequence. At the moment it 
+ Function: Start primer3 working and adds a sequence. At the moment it
            will not clear out the old sequence, but I suppose it should.
- Returns : Does not return anything. If called with a filename will allow 
+ Returns : Does not return anything. If called with a filename will allow
            you to retrieve the results
- Args    : -outfile : file name send output results to 
-	       -path    : path to primer3 executable
-	       -p3_settings_file :(optional) path to the settings file. Supported only by primer3 version 2 or above.
+ Args    : -outfile : file name send output results to
+           -path    : path to primer3 executable
+           -p3_settings_file :(optional) path to the settings file. Supported only by primer3 version 2 or above.
            -verbose :(optional) boolean value to set verbose output.
 
 
 =cut
 
 sub new {
-	my($class,@args) = @_;
-	my $self = $class->SUPER::new(@args);
-	$self->io->_initialize_io();
+    my($class,@args) = @_;
+    my $self = $class->SUPER::new(@args);
+    $self->io->_initialize_io();
 
     my ($program, $outfile, $path, $p3_settings_file, $verbose) = $self->_rearrange(
         [qw(PROGRAM OUTFILE PATH P3_SETTINGS_FILE VERBOSE)], @args);
 
-	$program    &&      $self->program_name($program);
-    
-	if ($outfile) {
+    $program    &&      $self->program_name($program);
+
+    if ($outfile) {
         $self->outfile_name($outfile);
     }
-	if ($path) {
-		my (undef,$path,$prog) = File::Spec->splitpath($path);
-		$self->program_dir($path);
-		$self->program_name($prog);
-	}
+    if ($path) {
+        my (undef,$path,$prog) = File::Spec->splitpath($path);
+        $self->program_dir($path);
+        $self->program_name($prog);
+    }
         if ($verbose){
             $self->{'verbose'}=1;
         }
     # determine the correct set of parameters to use (v1 vs v2)
     my $v = ($self->executable) ?  $self->version : $DEFAULT_VERSION;
-    
+
     if (($p3_settings_file)&&($v=~/^2/)){ #apply $p3_settings_file only if version>2
         $self->p3_settings_file($p3_settings_file);
     }
-    
+
     my $ct = 0;
-    
+
     %PARAMS = ($v && $v =~ /^2/) ? map {$_ => $ct++} @P2 :
                 map {$_ => $ct++} @P1;
-    
+
     $self->_set_from_args(\@args,
         -methods => [sort keys %PARAMS],
         -create => 1
        );
-    
-	return $self;
+
+    return $self;
 }
 
 =head2 program_name
@@ -431,10 +431,10 @@ sub new {
 =cut
 
 sub program_name {
-	my $self = shift;
+    my $self = shift;
     # if explicitly set, use that
-	return $self->{'program_name'} = shift @_ if @_;
-    # then if previously set, use that    
+    return $self->{'program_name'} = shift @_ if @_;
+    # then if previously set, use that
     return $self->{'program_name'} if $self->{'program_name'};
     # run a quick check to look for programm set class attribute if found
     if (!$PROGRAMNAME) {
@@ -463,18 +463,18 @@ sub program_dir {
     my ($self, $dir) = @_;
     if ($dir) {
        $self->{'program_dir'}=$dir;
-    } 
-    
-    # we need to stop here if we know what the answer is, otherwise we can 
+    }
+
+    # we need to stop here if we know what the answer is, otherwise we can
     # never set it and then call it later
     return $self->{'program_dir'} if $self->{'program_dir'};
-    
+
     if ($ENV{PRIMER3}) {
         $self->{'program_dir'} = Bio::Root::IO->catfile($ENV{PRIMER3});
     } else {
         $self->{'program_dir'} = Bio::Root::IO->catfile('usr','local','bin');
     }
-    
+
     return $self->{'program_dir'}
 }
 
@@ -515,7 +515,7 @@ sub version {
 =cut
 
 sub set_parameters {
-	my ($self, %args)=@_;
+    my ($self, %args)=@_;
     # hack around _rearrange issue to deal with lack of '-'
     my ($seq) = map {
             $args{$_}
@@ -529,9 +529,9 @@ sub set_parameters {
         }
         $self->{seq_cache} = \@seqs;
     }
-    
+
     my $added_args = 0;
-    
+
     # add this back in
     unless ($self->{'no_param_checks'}) {
         for my $key (sort keys %args) {
@@ -539,7 +539,7 @@ sub set_parameters {
             $method =~ s/^-//;    # remove possible hanging bp-like parameter prefix
             if (!$self->can($method)) {
                 next if $method eq 'SEQ';
-                $self->warn("Parameter $key is not a valid Primer3 parameter"); 
+                $self->warn("Parameter $key is not a valid Primer3 parameter");
                 next
             }
             $self->$method($args{$key});
@@ -547,23 +547,23 @@ sub set_parameters {
             if($self->{'verbose'}){print("$key has been updated to $args{$key}.\n");};
         }
     }
-	return $added_args;
+    return $added_args;
 }
 
 =head2 get_parameters
 
  Title    : get_parameters
  Usage    : $obj->get_parameters
- Function : 
- Returns  : 
- Args     : 
+ Function :
+ Returns  :
+ Args     :
 
 =cut
 
 sub get_parameters {
     my $self = shift;
     my %args = map {$_->[0] => $_->[1]}
-        grep { defined $_->[1] } 
+        grep { defined $_->[1] }
         map { [$_, $self->$_] } sort keys %PARAMS;
     return %args;
 }
@@ -582,22 +582,22 @@ sub get_parameters {
 sub reset_parameters {
     my $self = shift;
     my %args = map {$_ => undef} sort keys %PARAMS;
-    $self->_set_from_args(\%args, -methods => [sort keys %PARAMS]);    
+    $self->_set_from_args(\%args, -methods => [sort keys %PARAMS]);
 }
 
 =head2 p3_settings_file()
 
- Title	: p3settingsfile()
- Usage	: $primer3->p3settingsfile($file_path);
- Function	: Getter/Setter for the Primer3 settings file.
- Returns	: A string containing the path of the named settings file.
- Args	: $file_path A valid file path to the settings file.
- Note	: This argument only works in primer3 version 2 or above.
- 
+ Title  : p3settingsfile()
+ Usage  : $primer3->p3settingsfile($file_path);
+ Function   : Getter/Setter for the Primer3 settings file.
+ Returns    : A string containing the path of the named settings file.
+ Args   : $file_path A valid file path to the settings file.
+ Note   : This argument only works in primer3 version 2 or above.
+
 =cut
 
 sub p3_settings_file{
-	my ($self, $file_path)=@_;
+    my ($self, $file_path)=@_;
         if ($self->version()=~/^2/){ #version check
             if ($file_path){$self->{'p3_settings_file'}=$file_path;}
             if ($self->{'p3_settings_file'}){return $self->{'p3_settings_file'};}
@@ -614,39 +614,39 @@ sub p3_settings_file{
            See the Bio::Tools::Primer3 documentation for those functions.
  Args    : Same as for add_targets() (these are just delegated to that
            method prior creating the input file on the fly)
- Note    : 
-        
+ Note    :
+
 
 =cut
 
 sub run {
-	my($self, @seqs) = @_;
+    my($self, @seqs) = @_;
         my @exec_array;
-	my $executable = $self->executable;
+    my $executable = $self->executable;
         my $arguments = ''; #variable to hole run-time arguments
         my $out = $self->outfile_name;
-	unless ($executable && -e $executable) {
-		$self->throw("Executable was not found. Do not know where primer3 is!") if !$executable;
-		$self->throw("$executable was not found. Do not know where primer3 is!");
-		exit(-1);
-	}
+    unless ($executable && -e $executable) {
+        $self->throw("Executable was not found. Do not know where primer3 is!") if !$executable;
+        $self->throw("$executable was not found. Do not know where primer3 is!");
+        exit(-1);
+    }
 
     push (@exec_array, $executable);
-    
+
     my %params = $self->get_parameters;
-    
+
     my $file = $self->_generate_input_file(\%params, \@seqs);
 
     if($self->version=~/^2/){
         if ($self->p3_settings_file()){push (@exec_array, "-p3_settings_file=". $self->p3_settings_file());}
-        if ($self->{'verbose'}){ 
+        if ($self->{'verbose'}){
             push (@exec_array, "-echo_settings_file");
         }
     }
-    
+
     my $str;
     foreach (@exec_array){$str.=$_." ";} #"$executable $arguments < $file";
-    
+
     my $obj = Bio::Tools::Primer3Redux->new(-verbose => $self->verbose);
 
     my $status;
@@ -691,16 +691,16 @@ sub run {
 }
 
 sub _generate_input_file {
-	# note that I write this to a temp file because we need both read 
-	# and write access to primer3, therefore,
-	# we can't use a simple pipe.
+    # note that I write this to a temp file because we need both read
+    # and write access to primer3, therefore,
+    # we can't use a simple pipe.
     my ($self, $args, $seqs) = @_;
     my ($tmpfh, $tmpfile) = $self->io->tempfile();
 
     # this is a hack to get around interface issues and conflicts when passing
     # in raw sequence via PRIMER_SEQUENCE_ID and SEQUENCE (one can potentially
     # have both).  For now, push any explicitly set parameters on last
-    
+
     my ($id_tag, $seq_tag) = $self->version =~ /^2/ ? # v2 differs from v1
                             qw(SEQUENCE_ID SEQUENCE_TEMPLATE) :  #v2
                             qw(PRIMER_SEQUENCE_ID SEQUENCE);   #v1
@@ -718,10 +718,10 @@ sub _generate_input_file {
         delete $args->{$id_tag};
         delete $args->{$seq_tag};
     }
-    
+
     # generate the common BoulderIO string to be used for each sequence
     my $string = '';
-    
+
     for my $param (sort keys %$args) {
         my $tmp = $self->$param;
         my @data = (ref $tmp && reftype $tmp eq 'ARRAY' ) ? @$tmp : $tmp;
@@ -729,16 +729,16 @@ sub _generate_input_file {
             $string .= "$param=$d\n";
         }
     }
-    
+
     $string .= "=\n";
-    
+
     for my $data (@seqdata) {
         my $str = join("\n", map { "$_=".$data->{$_}} sort keys %$data)."\n$string";
         if($self->{'verbose'}){$self->debug("TRYING\n$str");}
         print $tmpfh $str;
     }
-    
-	close($tmpfh);
+
+    close($tmpfh);
     return $tmpfile;
 }
 
