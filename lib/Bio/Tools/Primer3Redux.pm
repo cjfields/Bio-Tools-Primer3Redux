@@ -7,7 +7,7 @@
 
 =head1 NAME
 
-Bio::Tools::Primer3Redux - BioPerl-based tools for parsing Primer3 output
+Bio::Tools::Primer3Redux - BioPerl-based tools for Primer3 (redone)
 
 =head1 SYNOPSIS
 
