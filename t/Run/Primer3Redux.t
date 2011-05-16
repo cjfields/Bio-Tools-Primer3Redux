@@ -15,7 +15,7 @@ BEGIN {
 
     # num tests: see SKIP block for requires_executable
     # + 5 before the block
-    test_begin();
+    test_begin(-tests => 92);
     use_ok('Bio::Tools::Run::Primer3Redux');
 }
 
@@ -216,4 +216,3 @@ SKIP: {
 
 unlink('mlc') if -e 'mlc';
 
-done_testing();
