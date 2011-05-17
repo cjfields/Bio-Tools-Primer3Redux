@@ -126,7 +126,7 @@ use Bio::Tools::Primer3Redux;
 use File::Spec;
 use Scalar::Util qw(blessed reftype);
 
-my $PROGRAMNAME;
+my $PROGRAMNAME = 'primer3_core';
 my %PARAMS;
 my @P1;
 my @P2;
@@ -387,7 +387,7 @@ sub new {
     my ($program, $outfile, $path, $p3_settings_file, $verbose) = $self->_rearrange(
         [qw(PROGRAM OUTFILE PATH P3_SETTINGS_FILE VERBOSE)], @args);
 
-    $program    &&      $self->program_name($program);
+    $program && $self->program_name($program);
 
     if ($outfile) {
         $self->outfile_name($outfile);
@@ -397,9 +397,9 @@ sub new {
         $self->program_dir($path);
         $self->program_name($prog);
     }
-        if ($verbose){
-            $self->{'verbose'}=1;
-        }
+    if ($verbose) {
+        $self->{'verbose'}=1;
+    }
     # determine the correct set of parameters to use (v1 vs v2)
     my $v = ($self->executable) ?  $self->version : $DEFAULT_VERSION;
 

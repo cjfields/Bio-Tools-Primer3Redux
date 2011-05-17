@@ -98,22 +98,26 @@ my @tests = (
 );
 
 ok( $primer3 = Bio::Tools::Run::Primer3Redux->new(), "can instantiate object" );
-like( $primer3->program_name, qr/primer3/, 'program_name' );
-my ($major_version) = ( $primer3->version =~ /^(\d+)/ );
-if ( $major_version < 2 ) {
-    diag('++++++++++++++++++++++++++++++++++++++++++');
-    diag("+ Using primer3 version $major_version.x");
-    diag('+ Some features may not work well.      ');
-    diag('+ It is recommended to update to primer3');
-    diag('+ verion 2.0 or later.                  ');
-    diag('++++++++++++++++++++++++++++++++++++++++++');
-}
 
 SKIP: {
     test_skip(
-        -tests               => 1,
+        -tests               => 90,
         -requires_executable => $primer3,
     );
+
+    like( $primer3->program_name, qr/primer3/, 'program_name' );
+    my $major_version;
+    if ( $primer3->version && $primer3->version =~ /^(\d+)/ ) {
+        $major_version = $1;
+        if ( $major_version < 2 ) {
+            diag('++++++++++++++++++++++++++++++++++++++++++');
+            diag("+ Using primer3 version $major_version.x");
+            diag('+ Some features may not work well.      ');
+            diag('+ It is recommended to update to primer3');
+            diag('+ verion 2.0 or later.                  ');
+            diag('++++++++++++++++++++++++++++++++++++++++++');
+        }
+    } 
 
     # now run the individual tests for each block in the
     # @tests array.
