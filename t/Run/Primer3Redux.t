@@ -117,7 +117,7 @@ SKIP: {
             diag('+ verion 2.0 or later.                  ');
             diag('++++++++++++++++++++++++++++++++++++++++++');
         }
-    } 
+    }
 
     # now run the individual tests for each block in the
     # @tests array.
@@ -219,4 +219,3 @@ SKIP: {
 }    # skip if no executable
 
 unlink('mlc') if -e 'mlc';
-
