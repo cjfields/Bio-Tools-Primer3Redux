@@ -6,7 +6,6 @@ my $builder = Module::Build->new(
     module_name         => 'Bio::Tools::Primer3Redux',
     license             => 'perl',
     dist_author         => q{Chris Fields <cjfields@bioperl.org>},
-    dist_version_from   => 'lib/Bio/Tools/Primer3Redux.pm',
     test_requires   => {
         'Test::Exception'   => 0,
         'Test::Warn'        => 0
