@@ -2,6 +2,8 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+0.04      2011-05-19 09:09:11 America/Chicago
+
  * Add methods 'errors' and 'warnings' so one can catch errors or
    warnings primer3 produces in the Result object (fschwach)
 
