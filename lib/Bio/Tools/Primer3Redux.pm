@@ -95,8 +95,6 @@ Internal methods are usually preceded with a _
 
 package Bio::Tools::Primer3Redux;
 
-our $VERSION = '0.01';
-
 use strict;
 use warnings;
 
