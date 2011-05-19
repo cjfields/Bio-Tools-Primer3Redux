@@ -19,7 +19,7 @@ Bio::Tools::Primer3Redux::Result - Result class for Primer3 data
     # parse a Primer3 report, and get Bio::Tools::Primer3Redux::Result
     while (my $result = $parser->next_result) {
         (say "primer design failed" and next) if $result->errors;
-         
+
         say $result->num_primer_pairs;
         my $pair = $result->next_primer_pair;
 
@@ -38,18 +38,18 @@ below for more on this).
 
 This parser will attach any lazily-generated features to that Bio::Seq object.
 The sequence can be retrieved via get_seq() at any point, such as prior to
-the end of a parse).
-To retrieve a sequence guaranteed to have all Primer/PrimerPair data
-attached, use get_processed_seq(). Switching seqs will cause a new batch of
-features to be generated and attached.
+the end of a parse). To retrieve a sequence guaranteed to have all
+Primer/PrimerPair data attached, use get_processed_seq(). Switching seqs will
+cause a new batch of features to be generated and attached.
 
-Please note that primer3 does not terminate on errors during primer design 
+Please note that primer3 does not terminate on errors during primer design
 (e.g. due to input parameters that are impossible to fulfill).
-To check if errors or warnings were produced, it is recommended to always 
+To check if errors or warnings were produced, it is recommended to always
 check the result object for errors like so:
-if ($result->errors){
-  # handle the situation 
-}
+
+  if ($result->errors){
+    # handle the situation
+  }
 
 =head1 FEEDBACK
 
@@ -341,7 +341,7 @@ sub run_parameter {
 
 
 =head2 warnings
- 
+
  Title   : warnings
  Function: returns a list of the warning messages returned by primer3, if any
  Usage   : my @warnings = $obj->warnings;
@@ -357,7 +357,7 @@ sub warnings {
 } # warnings
 
 =head2 errors
- 
+
  Title   : errors
  Function: returns a list of the error messages returned by primer3, if any
  Usage   : my @errors = $obj->errors;
