@@ -165,7 +165,7 @@ SKIP: {
                 }
                 my $num_pairs = $test->{expect}{num_pairs};
                 is( $result->num_primer_pairs, $num_pairs,
-                    "Got expected number of pairs: " . $num_pairs );
+                    "Got expected number of pairs: " . (defined($num_pairs) ?  $num_pairs : 'undef') );
                 my $ps = $result->get_processed_seq;
                 isa_ok( $ps, 'Bio::Seq' );
 
@@ -179,8 +179,8 @@ SKIP: {
                     my ( $fp, $rp ) =
                       ( $pair->forward_primer, $pair->reverse_primer );
 
-                 # can't really do exact checks here, but we can certainly check
-                 # various things about these...
+                    # can't really do exact checks here, but we can certainly
+                    # check various things about these...
                     isa_ok( $fp, 'Bio::Tools::Primer3Redux::Primer' );
                     isa_ok( $fp, 'Bio::SeqFeature::Generic' );
                     isa_ok( $rp, 'Bio::Tools::Primer3Redux::Primer' );
