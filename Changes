@@ -2,6 +2,9 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+ * Fix skipped test count
+ * Requires BioPerl 1.6.900 or higher
+
 0.04      2011-05-19 09:09:11 America/Chicago
 
  * Add methods 'errors' and 'warnings' so one can catch errors or
