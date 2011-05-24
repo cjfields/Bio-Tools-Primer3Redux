@@ -15,7 +15,7 @@ BEGIN {
 
     # num tests: see SKIP block for requires_executable
     # + 5 before the block
-    test_begin( -tests => 129);
+    test_begin( -tests => 164);
 
     # this is run in 00-compile.t
     #use_ok('Bio::Tools::Run::Primer3Redux');
@@ -27,6 +27,10 @@ my $verbose = $ENV{BIOPERLDEBUG} || 0;
 my ( $seqio, $seq, $primer3, $args, $results, $num_results );
 $seqio = Bio::SeqIO->new( -file => test_input_file('Primer3.fa') );
 $seq = $seqio->next_seq;
+
+# This is for the thermodynamic parameters. the files in that
+# directory are copied from the primer3 source tarball version 2.2.3
+my $primer3_config_dir = 't/data/primer3_config/';
 
 # Define sets of parameters and expected results
 # note: these are v2 parameters
@@ -131,6 +135,36 @@ my @tests = (
       errors => 0,
     }
   },
+  {
+    # TODO
+    # This input uses thermodynamic parameters to check primers
+    # and it should actually reject the primer pair but there
+    # seems to be a bug in primer3 and the pair is not rejected 
+    # despite PRIMER_PAIR_COMPL_ANY_TH > PRIMER_PAIR_MAX_COMPL_ANY_TH 
+    desc => "check existing primers. Use thermodynamic parameters.",
+    p3_version => 2,
+    run_without_seq_template => 1,
+    params => {
+      PRIMER_TASK=>'check_primers',
+      PRIMER_MIN_TM=>50,
+      PRIMER_EXPLAIN_FLAG=>1,
+      PRIMER_TM_FORMULA=>1,
+      PRIMER_THERMODYNAMIC_ALIGNMENT=>1,
+      PRIMER_THERMODYNAMIC_PARAMETERS_PATH => $primer3_config_dir,
+      PRIMER_SALT_CORRECTIONS=>1,
+      PRIMER_MAX_HAIRPIN_TH=>47,
+      PRIMER_MAX_SELF_ANY_TH=>47,
+      PRIMER_MAX_SELF_END_TH=>47,
+      PRIMER_PAIR_MAX_COMPL_ANY_TH=>30,
+      SEQUENCE_PRIMER=>'AGGCTAGGCGAGCTGAAAAATCCTAC',
+      SEQUENCE_PRIMER_REVCOMP=>'GTAGGATTTTTCAGTCGAAGGGGCAT',
+    },
+    expect => {
+      num_pairs => 1,
+      warnings => 0,
+      errors => 0,
+    }
+  },
 );
 
 ok( $primer3 = Bio::Tools::Run::Primer3Redux->new(), "can instantiate object" );
@@ -221,7 +255,7 @@ SKIP: {
                       cmp_ok( $primer->gc_content,   '>', 40, 'GC content >40' );
                       cmp_ok( $primer->melting_temp, '>', 50, 'Tm > 50' );
                       is( $primer->rank,       0, 'rank of the first primer is 0' );
-                      like( $primer->run_description, qr/considered\s+\d+/, "The primer's description contain the word 'considered'" );
+                      like( $primer->run_description, qr/considered/, "The primer's description contain the word 'considered'" );
                     }
 
 
