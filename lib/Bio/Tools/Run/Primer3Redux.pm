@@ -35,9 +35,23 @@ from the program primer3
   # set the maximum and minimum Tm of the primer
   $primer3->add_targets('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
 
-  # design the primers. This runs primer3 and returns a
+  # Design the primers. This runs primer3 and returns a
   # Bio::Tools::Primer3::result object with the results
-  $results = $primer3->run($seq);
+  # Primer3 can run in several modes (see explanation for
+  # 'PRIMER_TASK' in the primer3 doccumentation). To run a task,
+  # either call it by its PRIMER_TASK name as in these examples:
+  $pcr_primer_results = $primer3->pick_pcr_primers($seq);
+  $pcr_and_hyb_results = $primer3->pick_pcr_primers_and_hyb_probe( $seq );
+  $check_results = $primer3->check_primers(); 
+
+  # Alternatively, explicitly set the PRIMER_TASK parameter and 
+  # use the generic 'run' method (this is mainly here for backwards 
+  # compatibility) :
+  $primer3->PRIMER_TASK( 'pick_left_only' );
+  $result = $primer3->run( $seq );
+
+  # If no task is set and the 'run' method is called, primer3 will default to
+  # pick pcr primers.
 
   # see the Bio::Tools::Primer3Redux POD for
   # things that you can get from this. For example:
@@ -52,6 +66,19 @@ output files.
 
 This module a refactoring of the original BioPerl primer3 tools, themselves a
 refactoring of the original Primer3 module written by Rob Edwards. See
+my @ALLOWED_TASKS = qw(
+  pick_pcr_primers
+  pick_detection_primers
+  check_primers
+  pick_primer_list
+  pick_sequencing_primers
+  pick_cloning_primers
+  pick_discriminative_primers
+  pick_pcr_primers_and_hyb_probe
+  pick_left_only
+  pick_right_only
+  pick_hyb_probe_only
+);
 http://primer3.sourceforge.net for details and to download the software. This
 module should work for primer3 release 1 and above but is not guaranteed to work
 with earlier versions.
@@ -103,6 +130,7 @@ Shawn Hoon shawnh-at-stanford.edu
 Jason Stajich jason-at-bioperl.org
 Brian Osborne osborne1-at-optonline.net
 Chris Fields cjfields-at-bioperl-dot-org
+Frank Schwach fs5-at-sanger.ac.uk
 
 =head1 SEE ALSO
 
@@ -130,6 +158,7 @@ my $PROGRAMNAME = 'primer3_core';
 my %PARAMS;
 my @P1;
 my @P2;
+my @ALLOWED_TASKS;
 
 # 2.0 is still in alpha (3/3/10), so fallback to v1 for determining parameters
 my $DEFAULT_VERSION = '1.1.4';
@@ -386,6 +415,23 @@ BEGIN {
     P3_FILE_FLAG
     P3_COMMENT
 );
+
+# These are the allowed values for PRIMER_TASK
+# A run method of the same name will be created dynamically
+# in _create_run_methods for each of the tasks listed here
+@ALLOWED_TASKS = qw(
+  pick_pcr_primers
+  pick_detection_primers
+  check_primers
+  pick_primer_list
+  pick_sequencing_primers
+  pick_cloning_primers
+  pick_discriminative_primers
+  pick_pcr_primers_and_hyb_probe
+  pick_left_only
+  pick_right_only
+  pick_hyb_probe_only
+);
 }
 
 =head2 new()
@@ -411,6 +457,9 @@ sub new {
     my($class,@args) = @_;
     my $self = $class->SUPER::new(@args);
     $self->io->_initialize_io();
+
+    # create the methods for the various run methods
+    $self->_create_run_methods;
 
     my ($program, $outfile, $path, $p3_settings_file, $verbose) = $self->_rearrange(
         [qw(PROGRAM OUTFILE PATH P3_SETTINGS_FILE VERBOSE)], @args);
@@ -636,23 +685,82 @@ sub p3_settings_file{
 =head2 run
 
  Title   : run
- Usage   : $primer3->run;
- Function: Run the primer3 program with the arguments that you have supplied.
+ Usage   : $primer3->run; 
+ Function: Generic run method for the primer3 program. The PRIMER_TASK
+           must be defined either in the parameter set or it defaults to
+           'pick_pcr_primers'.
  Returns : A Bio::Tools::Primer3 object containing the results.
            See the Bio::Tools::Primer3 documentation for those functions.
- Args    : Same as for add_targets() (these are just delegated to that
-           method prior creating the input file on the fly)
- Note    :
-
+ Args    : Bio::Seq object(s) to use as SEQUENCE_TEMPLATE(s)
 
 =cut
 
 sub run {
-    my($self, @seqs) = @_;
-        my @exec_array;
+   my($self, @seqs) = @_;
+   $self->_do_run(\@seqs);
+}
+
+
+=head2 run
+
+ Title   : run
+ Usage   : $primer3->run; 
+ Function: Generic run method for the primer3 program. The PRIMER_TASK
+           must be defined either in the parameter set or it defaults to
+           'pick_pcr_primers'.
+ Returns : A Bio::Tools::Primer3 object containing the results.
+           See the Bio::Tools::Primer3 documentation for those functions.
+ Args    : Bio::Seq object(s) to use as SEQUENCE_TEMPLATE(s)
+
+=cut
+
+sub run {
+   my($self, @seqs) = @_;
+   $self->_do_run(\@seqs);
+}
+
+
+# Create a method that calls _do_run with correct parameters
+# for each of the allowed run methods (tasks)
+# so we can run primer3 with calls like this:
+# $primer3->pick_left_only( $seq );
+
+sub _create_run_methods {
+    my $self = shift;
+    foreach my $task (@ALLOWED_TASKS) {
+        my $code = 'my($self, @seqs) = @_; $self->_do_run(\@seqs, "'. 
+          $task.'");';
+        my $sub = eval "sub { $code }";
+        $self->throw("Compilation error while creating method for $task: $@") if $@;
+        no strict 'refs';
+        *{ __PACKAGE__ . '::' . $task } = $sub;
+    }
+}
+
+
+
+=head2 _do_run
+
+ Title   : _do_run
+ Usage   : INTERNAL 
+ Function: Generate input file and run the primer3 program. 
+ Returns : A Bio::Tools::Primer3 object containing the results.
+           See the Bio::Tools::Primer3 documentation for those functions.
+ Args    : sequence or ref to array of sequences, [task]
+           If 'task' given, parameter 'PRIMER_TASK' is set to the given task,
+           otherwise, the 'PRIMER_TASK' parameter is used to detmine what to do.
+           If that too isn't set the primer3 will default to pick_pcr_primers
+
+=cut
+
+sub _do_run {
+    my($self, $seqs, $task) = @_;
+    my @seqs = ref $seqs eq 'ARRAY' ? @$seqs : ($seqs);
+
+    my @exec_array;
     my $executable = $self->executable;
-        my $arguments = ''; #variable to hole run-time arguments
-        my $out = $self->outfile_name;
+    my $arguments = ''; #variable to hole run-time arguments
+    my $out = $self->outfile_name;
     unless ($executable && -e $executable) {
         $self->throw("Executable was not found. Do not know where primer3 is!") if !$executable;
         $self->throw("$executable was not found. Do not know where primer3 is!");
@@ -661,6 +769,7 @@ sub run {
 
     push (@exec_array, $executable);
 
+    $self->PRIMER_TASK( $task ) if $task;
     my %params = $self->get_parameters;
 
     my $file = $self->_generate_input_file(\%params, \@seqs);
@@ -717,6 +826,7 @@ sub run {
     $obj->_initialize_io(@args) if $obj && ref($obj);
     return $obj;
 }
+
 
 sub _generate_input_file {
     # note that I write this to a temp file because we need both read
