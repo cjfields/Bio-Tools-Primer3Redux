@@ -701,25 +701,6 @@ sub run {
 }
 
 
-=head2 run
-
- Title   : run
- Usage   : $primer3->run; 
- Function: Generic run method for the primer3 program. The PRIMER_TASK
-           must be defined either in the parameter set or it defaults to
-           'pick_pcr_primers'.
- Returns : A Bio::Tools::Primer3 object containing the results.
-           See the Bio::Tools::Primer3 documentation for those functions.
- Args    : Bio::Seq object(s) to use as SEQUENCE_TEMPLATE(s)
-
-=cut
-
-sub run {
-   my($self, @seqs) = @_;
-   $self->_do_run(\@seqs);
-}
-
-
 # Create a method that calls _do_run with correct parameters
 # for each of the allowed run methods (tasks)
 # so we can run primer3 with calls like this:
@@ -728,6 +709,7 @@ sub run {
 sub _create_run_methods {
     my $self = shift;
     foreach my $task (@ALLOWED_TASKS) {
+      next if defined  *{ __PACKAGE__ . '::' . $task };
         my $code = 'my($self, @seqs) = @_; $self->_do_run(\@seqs, "'. 
           $task.'");';
         my $sub = eval "sub { $code }";
