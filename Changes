@@ -2,6 +2,9 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+ * Changes to allow running w/o a defined sequence template to check
+   existing primers, add PRIMER_TASK method (fschwach)
+
 0.06      2011-06-07 21:51:44 America/Chicago
 
  * Module::Build doesn't support test_requires, so pushing req to
