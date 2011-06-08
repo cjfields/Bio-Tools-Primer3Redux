@@ -140,8 +140,8 @@ my @tests = (
     # TODO
     # This input uses thermodynamic parameters to check primers
     # and it should actually reject the primer pair but there
-    # seems to be a bug in primer3 and the pair is not rejected 
-    # despite PRIMER_PAIR_COMPL_ANY_TH > PRIMER_PAIR_MAX_COMPL_ANY_TH 
+    # seems to be a bug in primer3 and the pair is not rejected
+    # despite PRIMER_PAIR_COMPL_ANY_TH > PRIMER_PAIR_MAX_COMPL_ANY_TH
     desc => "check existing primers. Use thermodynamic parameters.",
     p3_version => 2,
     run_without_seq_template => 1,

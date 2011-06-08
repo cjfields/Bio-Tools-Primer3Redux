@@ -533,16 +533,16 @@ sub _generate_pair {
 # separated with Ns to match the product length.
 sub _create_default_seq {
     my $self = shift;
-  
+
     my $seq = $self->{sequence_data}{SEQUENCE_TEMPLATE} ||
-                $self->{sequence_data}{SEQUENCE} || 
+                $self->{sequence_data}{SEQUENCE} ||
                 $self->_dummy_seq_template_from_primers;
     my $acc = $self->{sequence_data}{SEQUENCE_ID} ||
                 $self->{sequence_data}{PRIMER_SEQUENCE_ID} ||
                 'ACC';
 
     return Bio::Seq->new(
-      -seq => $seq, 
+      -seq => $seq,
       -accession_number => $acc,
       -alphabet => 'dna'
     );
@@ -550,10 +550,10 @@ sub _create_default_seq {
 
 # Generate a dummy sequence based on the given primers and product size
 # in case no SEQUENCE_TEPLATE is set, in which case we should have primer seqs
-# The sequence consists of Ns with the forard, reverse and internal oligo 
-# inserted at the beginning, end and middle. The returned sequence will 
+# The sequence consists of Ns with the forard, reverse and internal oligo
+# inserted at the beginning, end and middle. The returned sequence will
 # always be 200bp long (primer3 default).
-# TODO: is it safe to assume 200bp here? 
+# TODO: is it safe to assume 200bp here?
 sub _dummy_seq_template_from_primers{
   my $self = shift;
   my $prod_length = 200;
@@ -565,7 +565,7 @@ sub _dummy_seq_template_from_primers{
   }
   my $ip = $self->{run_parameters}{SEQUENCE_INTERNAL_OLIGO};
   # If we have an internal oligo, just put it in the middle.
-  # This might fail if $seq is actually shorter 
+  # This might fail if $seq is actually shorter
   if( $ip ){
     substr( $seq, int(length($seq)/2), length($ip)) = $ip;
   }

@@ -42,10 +42,10 @@ from the program primer3
   # either call it by its PRIMER_TASK name as in these examples:
   $pcr_primer_results = $primer3->pick_pcr_primers($seq);
   $pcr_and_hyb_results = $primer3->pick_pcr_primers_and_hyb_probe( $seq );
-  $check_results = $primer3->check_primers(); 
+  $check_results = $primer3->check_primers();
 
-  # Alternatively, explicitly set the PRIMER_TASK parameter and 
-  # use the generic 'run' method (this is mainly here for backwards 
+  # Alternatively, explicitly set the PRIMER_TASK parameter and
+  # use the generic 'run' method (this is mainly here for backwards
   # compatibility) :
   $primer3->PRIMER_TASK( 'pick_left_only' );
   $result = $primer3->run( $seq );
@@ -685,7 +685,7 @@ sub p3_settings_file{
 =head2 run
 
  Title   : run
- Usage   : $primer3->run; 
+ Usage   : $primer3->run;
  Function: Generic run method for the primer3 program. The PRIMER_TASK
            must be defined either in the parameter set or it defaults to
            'pick_pcr_primers'.
@@ -710,7 +710,7 @@ sub _create_run_methods {
     my $self = shift;
     foreach my $task (@ALLOWED_TASKS) {
       next if defined  *{ __PACKAGE__ . '::' . $task };
-        my $code = 'my($self, @seqs) = @_; $self->_do_run(\@seqs, "'. 
+        my $code = 'my($self, @seqs) = @_; $self->_do_run(\@seqs, "'.
           $task.'");';
         my $sub = eval "sub { $code }";
         $self->throw("Compilation error while creating method for $task: $@") if $@;
@@ -724,8 +724,8 @@ sub _create_run_methods {
 =head2 _do_run
 
  Title   : _do_run
- Usage   : INTERNAL 
- Function: Generate input file and run the primer3 program. 
+ Usage   : INTERNAL
+ Function: Generate input file and run the primer3 program.
  Returns : A Bio::Tools::Primer3 object containing the results.
            See the Bio::Tools::Primer3 documentation for those functions.
  Args    : sequence or ref to array of sequences, [task]
@@ -755,7 +755,7 @@ sub _do_run {
     my %params = $self->get_parameters;
 
     my $file = $self->_generate_input_file(\%params, \@seqs);
-    
+
     if($self->version=~/^2/){
         if ($self->p3_settings_file()){push (@exec_array, "-p3_settings_file=". $self->p3_settings_file());}
         if ($self->{'verbose'}){
