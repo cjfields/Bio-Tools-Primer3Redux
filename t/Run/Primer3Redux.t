@@ -74,6 +74,7 @@ my @tests = (
       desc       => "make design fail due to very strict constraints",
       p3_version => 2,
       params     => {
+          'PRIMER_TASK'           => 'pick_pcr_primers',
           'PRIMER_MAX_POLY_X'     => 3,   # no runs of more than 2 of same nuc
           'PRIMER_MIN_TM'         => 55,
           'PRIMER_MAX_TM'         => 65,
@@ -199,12 +200,15 @@ SKIP: {
             skip( "tests for primer3 major version $required_version", 1 )
               if $required_version != $major_version;
 
+            # This tests the new API with dedicated run methods
+            # for each primer task, so remove PRIMER_TASK from params
+            my $primer_task = delete $test->{params}{PRIMER_TASK};
             $primer3->set_parameters( %{ $test->{params} } );
             my $parser;
             if ($test->{run_without_seq_template} ){
-              ok( $parser = $primer3->run(), "Can run primer3" );
+              ok( $parser = $primer3->$primer_task(), "Can run primer3 using method '$primer_task' and no Bio::Seq object" );
             } else {
-              ok( $parser = $primer3->run($seq), "Can run primer3" );
+              ok( $parser = $primer3->$primer_task($seq), "Can run primer3 using method '$primer_task'" );
             }
 
             while ( my $result = $parser->next_result ) {
