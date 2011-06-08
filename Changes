@@ -2,6 +2,11 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+0.06      2011-06-07 21:51:44 America/Chicago
+
+ * Module::Build doesn't support test_requires, so pushing req to
+   build_requires and changing to Test::Most (andk)
+
 0.05      2011-05-21 22:24:48 America/Chicago
 
  * Fix skipped test count
@@ -14,7 +19,7 @@ Revision history for Bio-Tools-Primer3Redux
 
 0.03      2011-05-16 22:39:27 America/Chicago
 
- * Fix test count, skip tests if there isn't an executable (to be 
+ * Fix test count, skip tests if there isn't an executable (to be
    changed when parsing is pulled out)
 
 0.02      2011-05-16 12:45:03 America/Chicago
