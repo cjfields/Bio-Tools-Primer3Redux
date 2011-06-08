@@ -2,6 +2,8 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+0.07      2011-06-07 22:06:28 America/Chicago
+
  * Changes to allow running w/o a defined sequence template to check
    existing primers, add PRIMER_TASK method (fschwach)
 
