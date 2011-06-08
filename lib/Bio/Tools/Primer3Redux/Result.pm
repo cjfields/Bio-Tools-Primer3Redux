@@ -527,13 +527,55 @@ sub _generate_pair {
 
 # a fallback Bio::SeqI in case the parser is called directly (not from the
 # wrapper)
+# This is also needed to construct a "dummy" sequence in case there is no
+# SEQUENCE_TEMPLATE, which is legal when running a "check_priemrs" task.
+# In this case, we make a dummy sequence that contains the given primers
+# separated with Ns to match the product length.
 sub _create_default_seq {
     my $self = shift;
-    return Bio::Seq->new(-seq => $self->{sequence_data}{SEQUENCE_TEMPLATE} ||
-                             $self->{sequence_data}{SEQUENCE} ,
-                     -accession_number => $self->{sequence_data}{SEQUENCE_ID} ||
-                                    $self->{sequence_data}{PRIMER_SEQUENCE_ID},
-                     -alphabet => 'dna');
+  
+    my $seq = $self->{sequence_data}{SEQUENCE_TEMPLATE} ||
+                $self->{sequence_data}{SEQUENCE} || 
+                $self->_dummy_seq_template_from_primers;
+    my $acc = $self->{sequence_data}{SEQUENCE_ID} ||
+                $self->{sequence_data}{PRIMER_SEQUENCE_ID} ||
+                'ACC';
+
+    return Bio::Seq->new(
+      -seq => $seq, 
+      -accession_number => $acc,
+      -alphabet => 'dna'
+    );
+}
+
+# Generate a dummy sequence based on the given primers and product size
+# in case no SEQUENCE_TEPLATE is set, in which case we should have primer seqs
+# The sequence consists of Ns with the forard, reverse and internal oligo 
+# inserted at the beginning, end and middle. The returned sequence will 
+# always be 200bp long (primer3 default).
+# TODO: is it safe to assume 200bp here? 
+sub _dummy_seq_template_from_primers{
+  my $self = shift;
+  my $prod_length = 200;
+
+  my $seq = 'N' x $prod_length;
+  my $fp = $self->{run_parameters}{SEQUENCE_PRIMER};
+  if ($fp){
+    substr( $seq, 0, length($fp)) = $fp;
+  }
+  my $ip = $self->{run_parameters}{SEQUENCE_INTERNAL_OLIGO};
+  # If we have an internal oligo, just put it in the middle.
+  # This might fail if $seq is actually shorter 
+  if( $ip ){
+    substr( $seq, int(length($seq)/2), length($ip)) = $ip;
+  }
+
+  my $rp = $self->{run_parameters}{SEQUENCE_PRIMER_REVCOMP};
+  if ($rp){
+    my $rp_revcom = Bio::Seq->new(-seq=>$rp)->primary_seq->revcom->seq;
+    substr( $seq, -1 * length($rp)) = $rp_revcom;
+  }
+  return $seq;
 }
 
 1;

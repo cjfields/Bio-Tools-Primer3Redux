@@ -354,6 +354,34 @@ BEGIN {
     PRIMER_INTERNAL_WT_TM_LT
     PRIMER_PAIR_WT_PRODUCT_TM_LT
 
+    PRIMER_THERMODYNAMIC_ALIGNMENT
+    PRIMER_THERMODYNAMIC_PARAMETERS_PATH
+    PRIMER_MAX_SELF_ANY_TH
+    PRIMER_MAX_SELF_ANY_TH
+    PRIMER_INTERNAL_MAX_SELF_ANY_TH
+    PRIMER_PAIR_MAX_COMPL_ANY_TH
+    PRIMER_WT_SELF_ANY_TH
+    PRIMER_INTERNAL_WT_SELF_ANY_TH
+    PRIMER_PAIR_WT_COMPL_ANY_TH
+    PRIMER_MAX_SELF_END_TH
+    PRIMER_INTERNAL_MAX_SELF_END_TH
+    PRIMER_PAIR_MAX_COMPL_END_TH
+    PRIMER_WT_SELF_END_TH
+    PRIMER_INTERNAL_WT_SELF_END_TH
+    PRIMER_PAIR_WT_COMPL_END_TH
+    PRIMER_MAX_HAIRPIN_TH
+    PRIMER_PAIR_MAX_HAIRPIN_TH
+    PRIMER_INTERNAL_MAX_HAIRPIN_TH
+    PRIMER_WT_HAIRPIN_TH
+    PRIMER_INTERNAL_WT_HAIRPIN_TH
+    PRIMER_MAX_TEMPLATE_MISPRIMING_TH
+    PRIMER_INTERNAL_MAX_TEMPLATE_MISHYB_TH
+    PRIMER_PAIR_MAX_TEMPLATE_MISPRIMING_TH
+    PRIMER_WT_TEMPLATE_MISPRIMING_TH
+    PRIMER_INTERNAL_WT_TEMPLATE_MISHYB_TH
+    PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH
+
+
     P3_FILE_ID
     P3_FILE_FLAG
     P3_COMMENT
@@ -636,7 +664,7 @@ sub run {
     my %params = $self->get_parameters;
 
     my $file = $self->_generate_input_file(\%params, \@seqs);
-
+    
     if($self->version=~/^2/){
         if ($self->p3_settings_file()){push (@exec_array, "-p3_settings_file=". $self->p3_settings_file());}
         if ($self->{'verbose'}){
@@ -732,10 +760,22 @@ sub _generate_input_file {
 
     $string .= "=\n";
 
-    for my $data (@seqdata) {
-        my $str = join("\n", map { "$_=".$data->{$_}} sort keys %$data)."\n$string";
-        if($self->{'verbose'}){$self->debug("TRYING\n$str");}
-        print $tmpfh $str;
+    # Print the parameters once for each sequence provided or, if
+    # no sequence given, just write a single block without the
+    # SEQUENCE_TEMPLATE but make sure we are doing a check_primers taks
+    # because that's the only allowed situation where no sequence is required
+    if (@seqdata){
+      for my $data (@seqdata) {
+          my $str = join("\n", map { "$_=".$data->{$_}} sort keys %$data)."\n$string";
+          if($self->{'verbose'}){$self->debug("TRYING\n$str");}
+          print $tmpfh $str;
+      }
+    } elsif ( $args->{PRIMER_TASK} eq 'check_primers' ){
+      print $tmpfh $string;
+    } else {
+      $self->throw("'run' was called without a sequence but PRIMER_TASK was not ".
+        "'check_primers'. All tasks except 'check_primers' must be given a sequence ".
+        "to design primers on");
     }
 
     close($tmpfh);
