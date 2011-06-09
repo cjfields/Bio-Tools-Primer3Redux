@@ -172,7 +172,7 @@ ok( $primer3 = Bio::Tools::Run::Primer3Redux->new(), "can instantiate object" );
 
 SKIP: {
     test_skip(
-        -tests               => 115,
+        -tests               => 163,
         -requires_executable => $primer3,
     );
 

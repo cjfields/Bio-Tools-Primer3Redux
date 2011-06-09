@@ -2,6 +2,9 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+ * Catch instance where executable isn't present (fails due to recent
+   changes in WrapperBase API); adjust skipped test count (cjfields)
+
 0.07      2011-06-07 22:06:28 America/Chicago
 
  * Changes to allow running w/o a defined sequence template to check
