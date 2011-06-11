@@ -2,6 +2,9 @@ Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
 
+ * Add Bio::Root::Version as 'requires', not 'build_requires'; this
+   will change to Bio::Root::Root at some future point (cjfields)
+
 0.08      2011-06-08 22:02:09 America/Chicago
 
  * Catch instance where executable isn't present (fails due to recent
