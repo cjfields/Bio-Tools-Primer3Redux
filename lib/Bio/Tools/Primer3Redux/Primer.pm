@@ -86,6 +86,7 @@ use strict;
 # Object preamble - inherits from Bio::Root::Root
 
 use base qw(Bio::SeqFeature::Generic);
+our $AUTOLOAD;
 
 =head2 oligo_type
 
@@ -199,5 +200,32 @@ sub run_description {
     }
     $self->has_tag('explain') ? return ($self->get_tag_values('explain'))[0] : return;
 }
+
+=head2 AUTOLOAD
+ 
+ Title   : AUTOLOAD
+ Function: Used to access tags (properties) of the primer as given by primer3
+           Check the primer3 documentation for available output tags (in lower case)
+           For example, the priemr3 docs describe a tag
+           PRIMER_LEFT_X_SELF_ANY
+           that means you can do
+           my $selfbinding = $primer->self_any;
+ Usage   : my $hp = $primer->hairpin_th;
+           my $stab = $primer->end_stability;
+           etc.
+           see primer3 doc for available output tags
+ Args    : none
+ Returns : value for the requested tag, if tag is present, otherwise undef
+
+=cut
+
+sub AUTOLOAD {
+  my $self = shift;
+  my $type = ref($self) or $self->throw("$self is not an object");
+  my $name = $AUTOLOAD;
+  $name =~ s/.*://;
+  $self->has_tag($name) ? return ($self->get_tag_values($name))[0] : return;
+} # AUTOLOAD
+
 
 1;

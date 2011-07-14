@@ -15,7 +15,7 @@ BEGIN {
 
     # num tests: see SKIP block for requires_executable
     # + 5 before the block
-    test_begin( -tests => 164);
+    test_begin( -tests => 188);
 
     # this is run in 00-compile.t
     #use_ok('Bio::Tools::Run::Primer3Redux');
@@ -172,7 +172,7 @@ ok( $primer3 = Bio::Tools::Run::Primer3Redux->new(), "can instantiate object" );
 
 SKIP: {
     test_skip(
-        -tests               => 163,
+        -tests               => 184,#163,
         -requires_executable => $primer3,
     );
 
@@ -256,8 +256,22 @@ SKIP: {
                       cmp_ok( $rp->seq->length, '>', 18,
                           "rev primer length >18" );
 
+                      # these properties are implemented specifically in the 
+                      # Primer object
                       cmp_ok( $primer->gc_content,   '>', 40, 'GC content >40' );
                       cmp_ok( $primer->melting_temp, '>', 50, 'Tm > 50' );
+                      
+                      # these properties are from auto-generated accessors
+                      # in the Primer object - we have one for each output
+                      # tag returned by primer3 (lower case)
+                      like( $primer->sequence,  qr/^[ACGTN]+$/, "The sequence of the primer can also be accessed via the SEQUENCE tag");
+                      if ( $test->{params}{PRIMER_THERMODYNAMIC_ALIGNMENT} ){
+                        like( $primer->self_any_th, qr/-?\d+(\.\d+)?/, "value from self-end tag is a number");
+                      } else {
+                        like( $primer->self_any, qr/-?\d+(\.\d+)?/, "value from self-end tag is a number");
+                      }
+                      is( $primer->tm, $primer->melting_temp, "the auto-generated method to access the value of tag TM returns the same as the 'meting_temp' method");
+
                       is( $primer->rank,       0, 'rank of the first primer is 0' );
                       like( $primer->run_description, qr/considered/, "The primer's description contain the word 'considered'" );
                     }
