@@ -66,19 +66,6 @@ output files.
 
 This module a refactoring of the original BioPerl primer3 tools, themselves a
 refactoring of the original Primer3 module written by Rob Edwards. See
-my @ALLOWED_TASKS = qw(
-  pick_pcr_primers
-  pick_detection_primers
-  check_primers
-  pick_primer_list
-  pick_sequencing_primers
-  pick_cloning_primers
-  pick_discriminative_primers
-  pick_pcr_primers_and_hyb_probe
-  pick_left_only
-  pick_right_only
-  pick_hyb_probe_only
-);
 http://primer3.sourceforge.net for details and to download the software. This
 module should work for primer3 release 1 and above but is not guaranteed to work
 with earlier versions.
