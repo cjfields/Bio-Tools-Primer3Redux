@@ -9,6 +9,7 @@ use warnings;
 use Data::Dumper;
 use Bio::Tools::Run::Primer3Redux;
 use Bio::SeqIO;
+use version;
 
 BEGIN {
     use Bio::Root::Test;
@@ -37,10 +38,12 @@ my $primer3_config_dir = 't/data/primer3_config/';
 # !!! When adding a new test, update the number of tests
 # to skip in the first SKIP block and in the BEGIN
 # block
+
+# Note p3_version is now a version.pm object, in line with Bio::Tools::Run::Primer3Redux::version.
 my @tests = (
   {
       desc       => "pick PCR primers with minimum product size range",
-      p3_version => 2,
+      p3_version => version->declare("2.0.0"),
       params     => {
           'PRIMER_TASK'               => 'pick_pcr_primers',
           'PRIMER_SALT_CORRECTIONS'   => 1,
@@ -57,7 +60,7 @@ my @tests = (
   {
       desc =>
         "pick PCR primers with minimum product size range (for primer3 v1)",
-      p3_version => 1,
+      p3_version => version->declare("1.0.0"),
       params     => {
           'PRIMER_TASK'               => 'pick_pcr_primers',
           'PRIMER_SALT_CORRECTIONS'   => 1,
@@ -72,7 +75,7 @@ my @tests = (
 
   {
       desc       => "make design fail due to very strict constraints",
-      p3_version => 2,
+      p3_version => version->declare("2.0.0"),
       params     => {
           'PRIMER_TASK'           => 'pick_pcr_primers',
           'PRIMER_MAX_POLY_X'     => 3,   # no runs of more than 2 of same nuc
@@ -86,8 +89,8 @@ my @tests = (
   },
 
   {
-      desc => "use PRIMER_PAIR_OK_REGION_LIST (new feature in primer3 v2.x)",
-      p3_version => 2,
+      desc => "use PRIMER_PAIR_OK_REGION_LIST (new feature in primer3 v2.2.x)",
+      p3_version => version->declare("2.2.0"), #This tag is only available for v2.2.0 or above
       params     => {
           'PRIMER_TASK'                         => 'pick_pcr_primers',
           'PRIMER_SALT_CORRECTIONS'             => 1,
@@ -95,7 +98,7 @@ my @tests = (
           'PRIMER_EXPLAIN_FLAG'                 => 1,
           'PRIMER_PRODUCT_MIN_TM'               => 60,
           'PRIMER_PRODUCT_SIZE_RANGE'           => '50-200',
-          'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' => '0,70,140,70',
+          'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' => '0,70,140,70', 
       },
       expect => {
           num_pairs => 5,
@@ -105,7 +108,7 @@ my @tests = (
 
   {
     desc   => "pick PCR primers but cause warnings and error",
-    p3_version => 2,
+    p3_version => version->declare("2.0.0"),
     params => {
       'PRIMER_TASK'               => 'pick_pcr_primers',
       'PRIMER_SALT_CORRECTIONS'   => 1,
@@ -120,7 +123,7 @@ my @tests = (
 
   {
     desc => "check existing primers without a sequence template. The primer ends are fully complementary but this is not picked up in this test because we are not using thermodynamic tests.",
-    p3_version => 2,
+    p3_version => version->declare("2.0.0"),
     run_without_seq_template => 1,
     params => {
       PRIMER_TASK=>'check_primers',
@@ -142,8 +145,9 @@ my @tests = (
     # and it should actually reject the primer pair but there
     # seems to be a bug in primer3 and the pair is not rejected
     # despite PRIMER_PAIR_COMPL_ANY_TH > PRIMER_PAIR_MAX_COMPL_ANY_TH
+    # This test limits to primer3 2.2.0 or above.
     desc => "check existing primers. Use thermodynamic parameters.",
-    p3_version => 2,
+    p3_version => version->declare("2.2.0"),
     run_without_seq_template => 1,
     params => {
       PRIMER_TASK=>'check_primers',
@@ -178,7 +182,7 @@ SKIP: {
 
     like( $primer3->program_name, qr/primer3/, 'program_name' );
     my $major_version;
-    if ( $primer3->version && $primer3->version =~ /^(\d+)/ ) {
+    if ( $primer3->version_check && $primer3->version_check->stringify =~ /^(\d+)/ ) {
         $major_version = $1;
         if ( $major_version < 2 ) {
             diag('++++++++++++++++++++++++++++++++++++++++++');
@@ -197,8 +201,9 @@ SKIP: {
         ok( $primer3 = Bio::Tools::Run::Primer3Redux->new() );
         my $required_version = $test->{p3_version} || 0;
         SKIP: {
-            skip( "tests for primer3 major version $required_version", 1 )
-              if $required_version != $major_version;
+            #Refined version check to deal with some tests that would require primer3 2.2.0 or above.
+            skip( "tests for primer3 version $required_version", 1 )
+              if ((($required_version>=version->declare("2.0.0"))&&($primer3->version_check<$required_version))||(($required_version<version->declare("2.0.0"))&&($required_version != $primer3->version_check)));
 
             # This tests the new API with dedicated run methods
             # for each primer task, so remove PRIMER_TASK from params

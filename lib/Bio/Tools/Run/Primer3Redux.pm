@@ -140,15 +140,19 @@ use strict;
 use Bio::Tools::Primer3Redux;
 use File::Spec;
 use Scalar::Util qw(blessed reftype);
+use version;
 
 my $PROGRAMNAME = 'primer3_core';
 my %PARAMS;
-my @P1;
-my @P2;
+my @P1; #Parameters common for all 0.x and 1.x.x versions
+my @P11; #Parameters for the Santalucia Tm calculations in v1.1.0-v1.1.2
+my @P2; #Parameters common for all 2.x.x versions
+my @P20; #2 Overlap parameters that only appears in v2.0.0
+my @P22; #New and changed parameters in v2.2.0 or above
 my @ALLOWED_TASKS;
 
 # 2.0 is still in alpha (3/3/10), so fallback to v1 for determining parameters
-my $DEFAULT_VERSION = '1.1.4';
+my $DEFAULT_VERSION = version->declare('1.1.4');
 BEGIN {
     # $ct assigns order of parameter building
 @P1 = qw(
@@ -163,10 +167,7 @@ BEGIN {
     PRIMER_FILE_FLAG
     PRIMER_FIRST_BASE_INDEX
     PRIMER_GC_CLAMP
-    PRIMER_DIVALENT_CONC
-    PRIMER_DNTP_CONC
     PRIMER_LOWERCASE_MASKING
-    PRIMER_SALT_CORRECTIONS
     PRIMER_INTERNAL_OLIGO_DNTP_CONC                 PRIMER_INTERNAL_OLIGO_DIVALENT_CONC
     PRIMER_INTERNAL_OLIGO_DNA_CONC                  PRIMER_INTERNAL_OLIGO_EXCLUDED_REGION
     PRIMER_INTERNAL_OLIGO_INPUT                     PRIMER_INTERNAL_OLIGO_MAX_GC
@@ -214,7 +215,6 @@ BEGIN {
     PRIMER_SEQUENCE_QUALITY
     PRIMER_START_CODON_POSITION
     PRIMER_TASK
-    PRIMER_TM_SANTALUCIA
     PRIMER_WT_COMPL_ANY                             PRIMER_WT_COMPL_END
     PRIMER_WT_END_QUAL                              PRIMER_WT_END_STABILITY
     PRIMER_WT_GC_PERCENT_GT                         PRIMER_WT_GC_PERCENT_LT
@@ -231,6 +231,15 @@ BEGIN {
     PRIMER_MAX_TEMPLATE_MISPRIMING
     PRIMER_PAIR_MAX_TEMPLATE_MISPRIMING             PRIMER_PAIR_WT_TEMPLATE_MISPRIMING
 );
+
+@P11 = qw(
+    PRIMER_TM_SANTALUCIA
+    PRIMER_SALT_CORRECTIONS
+   PRIMER_LOWERCASE_MASKING
+   PRIMER_DIVALENT_CONC
+   PRIMER_DNTP_CONC
+);
+
 @P2 = qw(
     SEQUENCE_EXCLUDED_REGION
     SEQUENCE_INCLUDED_REGION
@@ -245,11 +254,8 @@ BEGIN {
     SEQUENCE_PRIMER
     SEQUENCE_TEMPLATE
     SEQUENCE_FORCE_RIGHT_START
-    SEQUENCE_PRIMER_OVERLAP_POS
     SEQUENCE_ID
     SEQUENCE_PRIMER_REVCOMP
-    SEQUENCE_OVERLAP_JUNCTION_LIST
-    SEQUENCE_PRIMER_PAIR_OK_REGION_LIST
 
     PRIMER_DNA_CONC
     PRIMER_LIBERAL_BASE
@@ -271,7 +277,6 @@ BEGIN {
     PRIMER_PICK_RIGHT_PRIMER
     PRIMER_INTERNAL_DNA_CONC
     PRIMER_MAX_LIBRARY_MISPRIMING
-    PRIMER_POS_OVERLAP_TO_END_DIST
     PRIMER_INTERNAL_DNTP_CONC
     PRIMER_MAX_NS_ACCEPTED
     PRIMER_PRODUCT_MAX_TM
@@ -370,6 +375,20 @@ BEGIN {
     PRIMER_INTERNAL_WT_TM_LT
     PRIMER_PAIR_WT_PRODUCT_TM_LT
 
+    P3_FILE_ID
+    P3_FILE_FLAG
+    P3_COMMENT
+);
+@P20=qw(
+    SEQUENCE_PRIMER_OVERLAP_POS
+    PRIMER_POS_OVERLAP_TO_END_DIST
+);
+
+@P22=qw(
+    SEQUENCE_OVERLAP_JUNCTION_LIST
+    SEQUENCE_PRIMER_PAIR_OK_REGION_LIST
+    PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION
+    PRIMER_MIN_5_PRIME_OVERLAP_OF_JUNCTION
     PRIMER_THERMODYNAMIC_ALIGNMENT
     PRIMER_THERMODYNAMIC_PARAMETERS_PATH
     PRIMER_MAX_SELF_ANY_TH
@@ -397,10 +416,6 @@ BEGIN {
     PRIMER_INTERNAL_WT_TEMPLATE_MISHYB_TH
     PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH
 
-
-    P3_FILE_ID
-    P3_FILE_FLAG
-    P3_COMMENT
 );
 
 # These are the allowed values for PRIMER_TASK
@@ -467,16 +482,24 @@ sub new {
     }
     # determine the correct set of parameters to use (v1 vs v2)
 
-    my $v =  eval {$self->executable; 1;} ?  $self->version : $DEFAULT_VERSION;
+    my $v =  eval {$self->executable; 1;} ? $self->version_check : $DEFAULT_VERSION;
 
-    if (($p3_settings_file)&&($v=~/^2/)){ #apply $p3_settings_file only if version>2
+    #apply $p3_settings_file only if version>2
+    if (($p3_settings_file)&&($v>=version->declare('2.0.0'))){ 
         $self->p3_settings_file($p3_settings_file);
     }
 
     my $ct = 0;
 
-    %PARAMS = ($v && $v =~ /^2/) ? map {$_ => $ct++} @P2 :
-                map {$_ => $ct++} @P1;
+    #%PARAMS = ($v && $v >= version->declare("v2.0.0")) ? map {$_ => $ct++} @P2 :
+    #            map {$_ => $ct++} @P1;
+
+    if ($v){
+        if ($v>=version->declare('2.2.0')){%PARAMS=map{$_ => $ct++} (@P2, @P22)}
+        elsif ($v>=version->declare('2.0.0')){%PARAMS=map{$_ => $ct++} (@P2, @P20)}
+        elsif ($v>=version->declare('1.1.0')) {%PARAMS=map{$_=> $ct++} (@P1, @P11);}
+        else {%PARAMS=map{$_ => $ct++} @P1;}
+    }
 
     $self->_set_from_args(\@args,
         -methods => [sort keys %PARAMS],
@@ -544,25 +567,26 @@ sub program_dir {
     return $self->{'program_dir'}
 }
 
-=head2  version
+=head2  version_check
 
- Title   : version
- Usage   : $v = $prog->version();
+ Title   : version_check
+ Usage   : $v = $prog->version_check();
  Function: Determine the version number of the program
  Example :
- Returns : float or undef
+ Returns : a version.pm object in dotted-decimal form.
  Args    : none
+ Note    : This was previously known as Bio::Tools::Run::Primer3Redux::version, and renamed to avoid confusion with version.pm
 
 =cut
 
-sub version {
+sub version_check {
     my ($self) = @_;
     return unless my $exe = $self->executable;
     if (!defined $self->{'_progversion'}) {
         my $string = `$exe -about 2>&1`;
         my $v;
         if ($string =~ m{primer3\s+release\s+([\d\.]+)}) {
-            $self->{'_progversion'} = $1;
+            $self->{'_progversion'} = version->declare($1);
         }
     }
     return $self->{'_progversion'} || undef;
@@ -664,7 +688,7 @@ sub reset_parameters {
 
 sub p3_settings_file{
     my ($self, $file_path)=@_;
-        if ($self->version()=~/^2/){ #version check
+        if ($self->version_check()>=version->declare('2.0.0')){ #version check
             if ($file_path){$self->{'p3_settings_file'}=$file_path;}
             if ($self->{'p3_settings_file'}){return $self->{'p3_settings_file'};}
         }
@@ -745,7 +769,7 @@ sub _do_run {
 
     my $file = $self->_generate_input_file(\%params, \@seqs);
 
-    if($self->version=~/^2/){
+    if($self->version_check>= version->declare('v2.0.0')){
         if ($self->p3_settings_file()){push (@exec_array, "-p3_settings_file=". $self->p3_settings_file());}
         if ($self->{'verbose'}){
             push (@exec_array, "-echo_settings_file");
@@ -761,7 +785,7 @@ sub _do_run {
     my @args;
     # file output
     if ($out) {
-        if($self->version=~/^2/){
+        if($self->version_check>=version->declare('v2.0.0')){
             $str.= "-output=".$out. " <". $file;
             $status=system ($str);
         }
@@ -810,7 +834,7 @@ sub _generate_input_file {
     # in raw sequence via PRIMER_SEQUENCE_ID and SEQUENCE (one can potentially
     # have both).  For now, push any explicitly set parameters on last
 
-    my ($id_tag, $seq_tag) = $self->version =~ /^2/ ? # v2 differs from v1
+    my ($id_tag, $seq_tag) = $self->version_check >= version->declare ('v2.0.0') ? # v2 differs from v1
                             qw(SEQUENCE_ID SEQUENCE_TEMPLATE) :  #v2
                             qw(PRIMER_SEQUENCE_ID SEQUENCE);   #v1
     my @seqdata;
