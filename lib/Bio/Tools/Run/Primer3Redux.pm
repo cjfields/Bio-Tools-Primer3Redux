@@ -145,10 +145,11 @@ use version;
 my $PROGRAMNAME = 'primer3_core';
 my %PARAMS;
 my @P1; #Parameters common for all 0.x and 1.x.x versions
-my @P11; #Parameters for the Santalucia Tm calculations in v1.1.0-v1.1.2
+my @P110; #Parameters for the Santalucia Tm calculations in v1.1.0-v1.1.2
 my @P2; #Parameters common for all 2.x.x versions
-my @P20; #2 Overlap parameters that only appears in v2.0.0
-my @P22; #New and changed parameters in v2.2.0 or above
+my @P200; #2 Overlap parameters that only appears in v2.0.0
+my @P220; #New and changed parameters in v2.2.0 or above
+my @P222; #2 more tags added in v2.2.2
 my @ALLOWED_TASKS;
 
 # 2.0 is still in alpha (3/3/10), so fallback to v1 for determining parameters
@@ -232,7 +233,7 @@ BEGIN {
     PRIMER_PAIR_MAX_TEMPLATE_MISPRIMING             PRIMER_PAIR_WT_TEMPLATE_MISPRIMING
 );
 
-@P11 = qw(
+@P110 = qw(
     PRIMER_TM_SANTALUCIA
     PRIMER_SALT_CORRECTIONS
    PRIMER_LOWERCASE_MASKING
@@ -379,12 +380,12 @@ BEGIN {
     P3_FILE_FLAG
     P3_COMMENT
 );
-@P20=qw(
+@P200=qw(
     SEQUENCE_PRIMER_OVERLAP_POS
     PRIMER_POS_OVERLAP_TO_END_DIST
 );
 
-@P22=qw(
+@P220=qw(
     SEQUENCE_OVERLAP_JUNCTION_LIST
     SEQUENCE_PRIMER_PAIR_OK_REGION_LIST
     PRIMER_MIN_3_PRIME_OVERLAP_OF_JUNCTION
@@ -416,6 +417,11 @@ BEGIN {
     PRIMER_INTERNAL_WT_TEMPLATE_MISHYB_TH
     PRIMER_PAIR_WT_TEMPLATE_MISPRIMING_TH
 
+);
+
+@P222 = qw (
+    PRIMER_MIN_LEFT_THREE_PRIME_DISTANCE
+    PRIMER_MIN_RIGHT_THREE_PRIME_DISTANCE
 );
 
 # These are the allowed values for PRIMER_TASK
@@ -495,9 +501,10 @@ sub new {
     #            map {$_ => $ct++} @P1;
 
     if ($v){
-        if ($v>=version->declare('2.2.0')){%PARAMS=map{$_ => $ct++} (@P2, @P22)}
-        elsif ($v>=version->declare('2.0.0')){%PARAMS=map{$_ => $ct++} (@P2, @P20)}
-        elsif ($v>=version->declare('1.1.0')) {%PARAMS=map{$_=> $ct++} (@P1, @P11);}
+        if ($v>=version->declare("2.2.2")){%PARAMS=map{$_ => $ct++} (@P2, @P220, @P222)}
+        elsif ($v>=version->declare('2.2.0')){%PARAMS=map{$_ => $ct++} (@P2, @P220)}
+        elsif ($v>=version->declare('2.0.0')){%PARAMS=map{$_ => $ct++} (@P2, @P200)}
+        elsif ($v>=version->declare('1.1.0')) {%PARAMS=map{$_=> $ct++} (@P1, @P110);}
         else {%PARAMS=map{$_ => $ct++} @P1;}
     }
 

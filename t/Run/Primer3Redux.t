@@ -39,7 +39,7 @@ my $primer3_config_dir = 't/data/primer3_config/';
 # to skip in the first SKIP block and in the BEGIN
 # block
 
-# Note p3_version is now a version.pm object, in line with Bio::Tools::Run::Primer3Redux::version.
+# Note p3_version is now a version.pm object, in line with Bio::Tools::Run::Primer3Redux::version_check.
 my @tests = (
   {
       desc       => "pick PCR primers with minimum product size range",
