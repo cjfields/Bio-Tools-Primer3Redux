@@ -1,13 +1,14 @@
+# ABSTRACT: BioPerl-based tools for Primer3 (redone)
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 # BioPerl module for Bio::Tools::Primer3Redux
 #
 # Copyright Chad Matsalla, Rob Edwards, Chris Fields
 #
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code
-
-=head1 NAME
-
-Bio::Tools::Primer3Redux - BioPerl-based tools for Primer3 (redone)
 
 =head1 SYNOPSIS
 
@@ -69,11 +70,7 @@ Report bugs to the Bioperl bug tracking system to help us keep track
 the bugs and their resolution.  Bug reports can be submitted via the web:
 
   http://bugzilla.open-bio.org/
-
-=head1 AUTHOR -
-
-  Chris Fields
-
+  
 =head1 CONTRIBUTORS
 
   Rob Edwards

@@ -1,15 +1,14 @@
-#
+# ABSTRACT: Create input for and work with the output from the program primer3
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 # BioPerl module for Bio::Tools::Run::Primer3Redux
 #
 # Copyright Chad Matsalla, Rob Edwards, Chris Fields
 #
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code
-
-=head1 NAME
-
-Bio::Tools::Run::Primer3Redux - Create input for and work with the output
-from the program primer3
 
 =head1 SYNOPSIS
 
@@ -112,15 +111,6 @@ the bugs and their resolution.  Bug reports can be submitted via the
 web:
 
   http://bugzilla.open-bio.org/
-
-=head1 AUTHOR
-
-Chris Fields cjfields-at-bioperl-dot-org
-
-Refactored from the original Primer3 parser by Rob Edwards, which in turn was
-based heavily on work of Chad Matsalla.
-
-bioinformatics1@dieselwurks.com
 
 =head1 CONTRIBUTORS
 

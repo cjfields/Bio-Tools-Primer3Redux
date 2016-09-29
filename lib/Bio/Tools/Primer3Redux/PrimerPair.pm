@@ -1,4 +1,10 @@
-#
+# ABSTRACT: Simple Decorator of a Bio::SeqFeature::Generic with convenience
+# methods for retrieving left and right primers, internal oligos, and any
+# amplicon-related information
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 # BioPerl module for Bio::Tools::Primer3Redux::PrimerPair
 #
 # Cared for by Chris Fields cjfields at bioperl dot org
@@ -8,20 +14,6 @@
 # You may distribute this module under the same terms as perl itself
 #
 # POD documentation - main docs before the code
-
-=head1 NAME
-
-Bio::Tools::Primer3Redux::PrimerPair - Simple Decorator of a
-Bio::SeqFeature::Generic with convenience methods for retrieving left and
-right primers, internal oligos, and any amplicon-related information
-
-=head1 SYNOPSIS
-
-  # get the primer pair from the Bio::Tools::Primer3Redux::Result
-  my $pair = $result->next_primer_pair;
-
-  # grab left/right primers
-  my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
 
 =head1 DESCRIPTION
 
@@ -49,12 +41,6 @@ of the bugs and their resolution. Bug reports can be submitted via
 the web:
 
   http://bugzilla.open-bio.org/
-
-=head1 AUTHOR - Chris Fields
-
-  Email cjfields at bioperl dot org
-
-Describe contact details here
 
 =head1 CONTRIBUTORS
 

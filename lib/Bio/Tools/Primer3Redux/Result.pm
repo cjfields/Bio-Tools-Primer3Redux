@@ -1,5 +1,8 @@
-# $Id: Result.pm,v 0.01 2007-03-27 12:43:27 heikki Exp $
-#
+# ABSTRACT: Result class for Primer3 data
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 # BioPerl module for Bio::Tools::Primer3Redux::Result
 #
 # Cared for by Chris Fields cjfields at bioperl dot org
@@ -9,10 +12,6 @@
 # You may distribute this module under the same terms as perl itself
 #
 # POD documentation - main docs before the code
-
-=head1 NAME
-
-Bio::Tools::Primer3Redux::Result - Result class for Primer3 data
 
 =head1 SYNOPSIS
 
@@ -69,12 +68,6 @@ of the bugs and their resolution. Bug reports can be submitted via
 the web:
 
   http://bugzilla.open-bio.org/
-
-=head1 AUTHOR - Chris Fields
-
-  Email cjfields at bioperl dot org
-
-Describe contact details here
 
 =head1 CONTRIBUTORS
 
