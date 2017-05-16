@@ -12,6 +12,7 @@ my $builder = Module::Build->new(
     },
     requires => {
         'Bio::Root::Version'   => '1.006.900',
+	'version'		=> '0.77',
     },
     recursive_test_files     => 1,
     add_to_cleanup      => [ 'Bio-Tools-Primer3Redux-*' ],
