@@ -32,7 +32,7 @@
   }
 
   # set the maximum and minimum Tm of the primer
-  $primer3->add_targets('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
+  $primer3->set_parameters('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
 
   # Design the primers. This runs primer3 and returns a
   # Bio::Tools::Primer3::result object with the results
@@ -481,7 +481,7 @@ sub new {
     my $v =  eval {$self->executable; 1;} ? $self->version_check : $DEFAULT_VERSION;
 
     #apply $p3_settings_file only if version>2
-    if (($p3_settings_file)&&($v>=version->declare('2.0.0'))){ 
+    if (($p3_settings_file)&&($v>=version->declare('2.0.0'))){
         $self->p3_settings_file($p3_settings_file);
     }
 
