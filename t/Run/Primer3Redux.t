@@ -16,7 +16,7 @@ BEGIN {
 
     # num tests: see SKIP block for requires_executable
     # + 5 before the block
-    test_begin( -tests => 188);
+    test_begin( -tests => 188 );
 
     # this is run in 00-compile.t
     #use_ok('Bio::Tools::Run::Primer3Redux');
@@ -41,153 +41,159 @@ my $primer3_config_dir = 't/data/primer3_config/';
 
 # Note p3_version is now a version.pm object, in line with Bio::Tools::Run::Primer3Redux::version_check.
 my @tests = (
-  {
-      desc       => "pick PCR primers with minimum product size range",
-      p3_version => version->declare("2.0.0"),
-      params     => {
-          'PRIMER_TASK'               => 'pick_pcr_primers',
-          'PRIMER_SALT_CORRECTIONS'   => 1,
-          'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
-          'PRIMER_TM_FORMULA'         => 1,
-          'PRIMER_PRODUCT_SIZE_RANGE' => '100-250',
-          'PRIMER_EXPLAIN_FLAG'       => 1,
-      },
-      expect => {
-          num_pairs => 5,
-          loc_pair  => [ 69, 210 ],
-      }
-  },
-
-  {
-      desc =>
-        "pick PCR primers with minimum product size range (for primer3 v1)",
-      p3_version => version->declare("1.0.0"),
-      params     => {
-          'PRIMER_TASK'               => 'pick_pcr_primers',
-          'PRIMER_SALT_CORRECTIONS'   => 1,
-          'PRIMER_PRODUCT_SIZE_RANGE' => '100-250',
-          'PRIMER_EXPLAIN_FLAG'       => 1,
-      },
-      expect => {
-          num_pairs => 4,
-          loc_pair  => [ 66, 168 ],
-      }
-  },
-
-  {
-      desc       => "make design fail due to very strict constraints",
-      p3_version => version->declare("2.0.0"),
-      params     => {
-          'PRIMER_TASK'           => 'pick_pcr_primers',
-          'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
-          'PRIMER_MAX_POLY_X'     => 3,   # no runs of more than 2 of same nuc
-          'PRIMER_MIN_TM'         => 55,
-          'PRIMER_MAX_TM'         => 65,
-          'PRIMER_PRODUCT_MIN_TM' => 75,
-          'PRIMER_PRODUCT_OPT_TM' => 90,
-          'PRIMER_PRODUCT_MAX_TM' => 95,
-      },
-      expect => { num_pairs => 0, }
-  },
-
-  {
-      desc => "use PRIMER_PAIR_OK_REGION_LIST (new feature in primer3 v2.2.x)",
-      p3_version => version->declare("2.2.0"), #This tag is only available for v2.2.0 or above
-      params     => {
-          'PRIMER_TASK'                         => 'pick_pcr_primers',
-          'PRIMER_SALT_CORRECTIONS'             => 1,
-          'PRIMER_TM_FORMULA'                   => 1,
-          'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
-          'PRIMER_EXPLAIN_FLAG'                 => 1,
-          'PRIMER_PRODUCT_MIN_TM'               => 60,
-          'PRIMER_PRODUCT_SIZE_RANGE'           => '50-200',
-          'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' => '0,70,140,70',
-      },
-      expect => {
-          num_pairs => 5,
-          loc_pair  => [ 17, 210 ],
-      }
-  },
-
-  {
-    desc   => "pick PCR primers but cause warnings and error",
-    p3_version => version->declare("2.0.0"),
-    params => {
-      'PRIMER_TASK'               => 'pick_pcr_primers',
-      'PRIMER_SALT_CORRECTIONS'   => 1,
-      'PRIMER_TM_FORMULA'         => 1,
-      'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
-      'PRIMER_EXPLAIN_FLAG'       => 1,
-      'SEQUENCE_PRIMER'          => 'AAAAAAAAAAAAAAAAAAA', # this is not on the SEQUENCE_TEMPLATE, so will cause error
+    {
+        desc       => "pick PCR primers with minimum product size range",
+        p3_version => version->declare("2.0.0"),
+        params     => {
+            'PRIMER_TASK'                          => 'pick_pcr_primers',
+            'PRIMER_SALT_CORRECTIONS'              => 1,
+            'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
+            'PRIMER_TM_FORMULA'                    => 1,
+            'PRIMER_PRODUCT_SIZE_RANGE'            => '100-250',
+            'PRIMER_EXPLAIN_FLAG'                  => 1,
+        },
+        expect => {
+            num_pairs => 5,
+            loc_pair  => [ 69, 210 ],
+        }
     },
-    expect => {
-      errors => 1,
-    }
-  },
 
-  {
-    desc => "check existing primers without a sequence template. The primer ends are fully complementary but this is not picked up in this test because we are not using thermodynamic tests.",
-    p3_version => version->declare("2.0.0"),
-    run_without_seq_template => 1,
-    params => {
-      PRIMER_TASK=>'check_primers',
-      PRIMER_MIN_TM=>50,
-      PRIMER_EXPLAIN_FLAG=>1,
-      PRIMER_TM_FORMULA=>1,
-     'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
-      SEQUENCE_PRIMER=>'AGGCTAGGCGAGCTGAAAAATCCTAC',
-      SEQUENCE_PRIMER_REVCOMP=>'GTAGGATTTTTCAGTCGAAGGGGCAT',
+    {
+        desc =>
+          "pick PCR primers with minimum product size range (for primer3 v1)",
+        p3_version => version->declare("1.0.0"),
+        params     => {
+            'PRIMER_TASK'               => 'pick_pcr_primers',
+            'PRIMER_SALT_CORRECTIONS'   => 1,
+            'PRIMER_PRODUCT_SIZE_RANGE' => '100-250',
+            'PRIMER_EXPLAIN_FLAG'       => 1,
+        },
+        expect => {
+            num_pairs => 4,
+            loc_pair  => [ 66, 168 ],
+        }
     },
-    expect => {
-      num_pairs => 1,
-      warnings => 0,
-      errors => 0,
-    }
-  },
-  {
-    # TODO
-    # This input uses thermodynamic parameters to check primers
-    # and it should actually reject the primer pair but there
-    # seems to be a bug in primer3 and the pair is not rejected
-    # despite PRIMER_PAIR_COMPL_ANY_TH > PRIMER_PAIR_MAX_COMPL_ANY_TH
-    # This test limits to primer3 2.2.0 or above.
-    desc => "check existing primers. Use thermodynamic parameters.",
-    p3_version => version->declare("2.2.0"),
-    run_without_seq_template => 1,
-    params => {
-      PRIMER_TASK=>'check_primers',
-      PRIMER_MIN_TM=>50,
-      PRIMER_EXPLAIN_FLAG=>1,
-      PRIMER_TM_FORMULA=>1,
-      PRIMER_THERMODYNAMIC_ALIGNMENT=>1,
-      PRIMER_THERMODYNAMIC_PARAMETERS_PATH => $primer3_config_dir,
-      PRIMER_SALT_CORRECTIONS=>1,
-      PRIMER_MAX_HAIRPIN_TH=>47,
-      PRIMER_MAX_SELF_ANY_TH=>47,
-      PRIMER_MAX_SELF_END_TH=>47,
-      PRIMER_PAIR_MAX_COMPL_ANY_TH=>30,
-      SEQUENCE_PRIMER=>'AGGCTAGGCGAGCTGAAAAATCCTAC',
-      SEQUENCE_PRIMER_REVCOMP=>'GTAGGATTTTTCAGTCGAAGGGGCAT',
+
+    {
+        desc       => "make design fail due to very strict constraints",
+        p3_version => version->declare("2.0.0"),
+        params     => {
+            'PRIMER_TASK'                          => 'pick_pcr_primers',
+            'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
+            'PRIMER_MAX_POLY_X'     => 3,   # no runs of more than 2 of same nuc
+            'PRIMER_MIN_TM'         => 55,
+            'PRIMER_MAX_TM'         => 65,
+            'PRIMER_PRODUCT_MIN_TM' => 75,
+            'PRIMER_PRODUCT_OPT_TM' => 90,
+            'PRIMER_PRODUCT_MAX_TM' => 95,
+        },
+        expect => { num_pairs => 0, }
     },
-    expect => {
-      num_pairs => 1,
-      warnings => 0,
-      errors => 0,
-    }
-  },
+
+    {
+        desc =>
+          "use PRIMER_PAIR_OK_REGION_LIST (new feature in primer3 v2.2.x)",
+        p3_version => version->declare("2.2.0")
+        ,    #This tag is only available for v2.2.0 or above
+        params => {
+            'PRIMER_TASK'                          => 'pick_pcr_primers',
+            'PRIMER_SALT_CORRECTIONS'              => 1,
+            'PRIMER_TM_FORMULA'                    => 1,
+            'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
+            'PRIMER_EXPLAIN_FLAG'                  => 1,
+            'PRIMER_PRODUCT_MIN_TM'                => 60,
+            'PRIMER_PRODUCT_SIZE_RANGE'            => '50-200',
+            'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST'  => '0,70,140,70',
+        },
+        expect => {
+            num_pairs => 5,
+            loc_pair  => [ 17, 210 ],
+        }
+    },
+
+    {
+        desc       => "pick PCR primers but cause warnings and error",
+        p3_version => version->declare("2.0.0"),
+        params     => {
+            'PRIMER_TASK'                          => 'pick_pcr_primers',
+            'PRIMER_SALT_CORRECTIONS'              => 1,
+            'PRIMER_TM_FORMULA'                    => 1,
+            'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
+            'PRIMER_EXPLAIN_FLAG'                  => 1,
+            'SEQUENCE_PRIMER'                      => 'AAAAAAAAAAAAAAAAAAA'
+            ,    # this is not on the SEQUENCE_TEMPLATE, so will cause error
+        },
+        expect => {
+            errors => 1,
+        }
+    },
+
+    {
+        desc =>
+"check existing primers without a sequence template. The primer ends are fully complementary but this is not picked up in this test because we are not using thermodynamic tests.",
+        p3_version               => version->declare("2.0.0"),
+        run_without_seq_template => 1,
+        params                   => {
+            PRIMER_TASK                            => 'check_primers',
+            PRIMER_MIN_TM                          => 50,
+            PRIMER_EXPLAIN_FLAG                    => 1,
+            PRIMER_TM_FORMULA                      => 1,
+            'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
+            SEQUENCE_PRIMER         => 'AGGCTAGGCGAGCTGAAAAATCCTAC',
+            SEQUENCE_PRIMER_REVCOMP => 'GTAGGATTTTTCAGTCGAAGGGGCAT',
+        },
+        expect => {
+            num_pairs => 1,
+            warnings  => 0,
+            errors    => 0,
+        }
+    },
+    {
+        # TODO
+        # This input uses thermodynamic parameters to check primers
+        # and it should actually reject the primer pair but there
+        # seems to be a bug in primer3 and the pair is not rejected
+        # despite PRIMER_PAIR_COMPL_ANY_TH > PRIMER_PAIR_MAX_COMPL_ANY_TH
+        # This test limits to primer3 2.2.0 or above.
+        desc       => "check existing primers. Use thermodynamic parameters.",
+        p3_version => version->declare("2.2.0"),
+        run_without_seq_template => 1,
+        params                   => {
+            PRIMER_TASK                          => 'check_primers',
+            PRIMER_MIN_TM                        => 50,
+            PRIMER_EXPLAIN_FLAG                  => 1,
+            PRIMER_TM_FORMULA                    => 1,
+            PRIMER_THERMODYNAMIC_ALIGNMENT       => 1,
+            PRIMER_THERMODYNAMIC_PARAMETERS_PATH => $primer3_config_dir,
+            PRIMER_SALT_CORRECTIONS              => 1,
+            PRIMER_MAX_HAIRPIN_TH                => 47,
+            PRIMER_MAX_SELF_ANY_TH               => 47,
+            PRIMER_MAX_SELF_END_TH               => 47,
+            PRIMER_PAIR_MAX_COMPL_ANY_TH         => 30,
+            SEQUENCE_PRIMER         => 'AGGCTAGGCGAGCTGAAAAATCCTAC',
+            SEQUENCE_PRIMER_REVCOMP => 'GTAGGATTTTTCAGTCGAAGGGGCAT',
+        },
+        expect => {
+            num_pairs => 1,
+            warnings  => 0,
+            errors    => 0,
+        }
+    },
 );
 
 ok( $primer3 = Bio::Tools::Run::Primer3Redux->new(), "can instantiate object" );
 
 SKIP: {
     test_skip(
-        -tests               => 184,#163,
+        -tests               => 184,        #163,
         -requires_executable => $primer3,
     );
 
     like( $primer3->program_name, qr/primer3/, 'program_name' );
     my $major_version;
-    if ( $primer3->version_check && $primer3->version_check->stringify =~ /^(\d+)/ ) {
+    if (   $primer3->version_check
+        && $primer3->version_check->stringify =~ /^(\d+)/ )
+    {
         $major_version = $1;
         if ( $major_version < 2 ) {
             diag('++++++++++++++++++++++++++++++++++++++++++');
@@ -205,93 +211,124 @@ SKIP: {
         diag( 'Test parameter set for: ' . $test->{desc} ) if $verbose;
         ok( $primer3 = Bio::Tools::Run::Primer3Redux->new() );
         my $required_version = $test->{p3_version} || 0;
-        SKIP: {
-            #Refined version check to deal with some tests that would require primer3 2.2.0 or above.
+      SKIP: {
+#Refined version check to deal with some tests that would require primer3 2.2.0 or above.
             skip( "tests for primer3 version $required_version", 1 )
-              if ((($required_version>=version->declare("2.0.0"))&&($primer3->version_check<$required_version))||(($required_version<version->declare("2.0.0"))&&($required_version != $primer3->version_check)));
+              if (
+                (
+                       ( $required_version >= version->declare("2.0.0") )
+                    && ( $primer3->version_check < $required_version )
+                )
+                || (   ( $required_version < version->declare("2.0.0") )
+                    && ( $required_version != $primer3->version_check ) )
+              );
 
             # This tests the new API with dedicated run methods
             # for each primer task, so remove PRIMER_TASK from params
             my $primer_task = delete $test->{params}{PRIMER_TASK};
             $primer3->set_parameters( %{ $test->{params} } );
             my $parser;
-            if ($test->{run_without_seq_template} ){
-              ok( $parser = $primer3->$primer_task(), "Can run primer3 using method '$primer_task' and no Bio::Seq object" );
-            } else {
-              ok( $parser = $primer3->$primer_task($seq), "Can run primer3 using method '$primer_task'" );
+            if ( $test->{run_without_seq_template} ) {
+                ok(
+                    $parser = $primer3->$primer_task(),
+"Can run primer3 using method '$primer_task' and no Bio::Seq object"
+                );
+            }
+            else {
+                ok(
+                    $parser = $primer3->$primer_task($seq),
+                    "Can run primer3 using method '$primer_task'"
+                );
             }
 
             while ( my $result = $parser->next_result ) {
-    #diag Dumper $result;
+
+                #diag Dumper $result;
                 isa_ok( $result, 'Bio::Tools::Primer3Redux::Result' );
                 my $expect_warnings = $test->{expect}{warnings};
-                SKIP:{
-                  skip ("test warnings if expectation defined",1) if !defined $expect_warnings;
-                  is ($result->warnings, $expect_warnings, "got the expected number of primer design warnings");
+              SKIP: {
+                    skip( "test warnings if expectation defined", 1 )
+                      if !defined $expect_warnings;
+                    is( $result->warnings, $expect_warnings,
+                        "got the expected number of primer design warnings" );
                 }
                 my $expect_errors = $test->{expect}{errors};
-                SKIP:{
-                  skip ("test errors if expectation defined",1) if !defined $expect_errors;
-                    is ($result->errors, $expect_errors, "got the expected number of primer design errors");
+              SKIP: {
+                    skip( "test errors if expectation defined", 1 )
+                      if !defined $expect_errors;
+                    is( $result->errors, $expect_errors,
+                        "got the expected number of primer design errors" );
                 }
                 my $num_pairs = $test->{expect}{num_pairs};
                 is( $result->num_primer_pairs, $num_pairs,
-                    "Got expected number of pairs: " . (defined($num_pairs) ?  $num_pairs : 'undef') );
+                    "Got expected number of pairs: "
+                      . ( defined($num_pairs) ? $num_pairs : 'undef' ) );
                 my $ps = $result->get_processed_seq;
                 isa_ok( $ps, 'Bio::Seq' );
 
-                SKIP: {
+              SKIP: {
                     skip( "tests that require >0 primer pairs", 1 )
-                      if ! $result->num_primer_pairs;
+                      if !$result->num_primer_pairs;
                     my $pair = $result->next_primer_pair;
                     isa_ok( $pair, 'Bio::Tools::Primer3Redux::PrimerPair' );
                     isa_ok( $pair, 'Bio::SeqFeature::Generic' );
 
                     my ( $fp, $rp ) =
                       ( $pair->forward_primer, $pair->reverse_primer );
-                    is( $fp->oligo_type, 'forward_primer', 'oligo_type of fwd primer is forward_priemr' );
-                    foreach my $primer ($fp,$rp){
-                      # can't really do exact checks here, but we can certainly
-                      # check various things about these...
-                      isa_ok( $primer, 'Bio::Tools::Primer3Redux::Primer' );
-                      isa_ok( $primer, 'Bio::SeqFeature::Generic' );
-                      isa_ok( $rp, 'Bio::Tools::Primer3Redux::Primer' );
-                      isa_ok( $rp, 'Bio::SeqFeature::Generic' );
-                      like( $primer->seq->seq, qr/^[ACGTN]+$/,
-                          "forward primer contains sequence" );
-                      like( $rp->seq->seq, qr/^[ACGTN]+$/,
-                          "reverse primer contains sequence" );
-                      cmp_ok( $primer->seq->length, '>', 18,
-                          "fwd primer length >18" );
-                      cmp_ok( $rp->seq->length, '>', 18,
-                          "rev primer length >18" );
+                    is( $fp->oligo_type, 'forward_primer',
+                        'oligo_type of fwd primer is forward_priemr' );
+                    foreach my $primer ( $fp, $rp ) {
 
-                      # these properties are implemented specifically in the
-                      # Primer object
-                      cmp_ok( $primer->gc_content,   '>', 40, 'GC content >40' );
-                      cmp_ok( $primer->melting_temp, '>', 50, 'Tm > 50' );
+                       # can't really do exact checks here, but we can certainly
+                       # check various things about these...
+                        isa_ok( $primer, 'Bio::Tools::Primer3Redux::Primer' );
+                        isa_ok( $primer, 'Bio::SeqFeature::Generic' );
+                        isa_ok( $rp,     'Bio::Tools::Primer3Redux::Primer' );
+                        isa_ok( $rp,     'Bio::SeqFeature::Generic' );
+                        like( $primer->seq->seq, qr/^[ACGTN]+$/,
+                            "forward primer contains sequence" );
+                        like( $rp->seq->seq, qr/^[ACGTN]+$/,
+                            "reverse primer contains sequence" );
+                        cmp_ok( $primer->seq->length, '>', 18,
+                            "fwd primer length >18" );
+                        cmp_ok( $rp->seq->length, '>', 18,
+                            "rev primer length >18" );
 
-                      # these properties are from auto-generated accessors
-                      # in the Primer object - we have one for each output
-                      # tag returned by primer3 (lower case)
-                      like( $primer->sequence,  qr/^[ACGTN]+$/, "The sequence of the primer can also be accessed via the SEQUENCE tag");
-                      if ( $test->{params}{PRIMER_THERMODYNAMIC_ALIGNMENT} ){
-                        like( $primer->self_any_th, qr/-?\d+(\.\d+)?/, "value from self-end tag is a number");
-                      } else {
-                        like( $primer->self_any, qr/-?\d+(\.\d+)?/, "value from self-end tag is a number");
-                      }
-                      is( $primer->tm, $primer->melting_temp, "the auto-generated method to access the value of tag TM returns the same as the 'meting_temp' method");
+                        # these properties are implemented specifically in the
+                        # Primer object
+                        cmp_ok( $primer->gc_content, '>', 40,
+                            'GC content >40' );
+                        cmp_ok( $primer->melting_temp, '>', 50, 'Tm > 50' );
 
-                      is( $primer->rank,       0, 'rank of the first primer is 0' );
-                      like( $primer->run_description, qr/considered/, "The primer's description contain the word 'considered'" );
+                        # these properties are from auto-generated accessors
+                        # in the Primer object - we have one for each output
+                        # tag returned by primer3 (lower case)
+                        like( $primer->sequence, qr/^[ACGTN]+$/,
+"The sequence of the primer can also be accessed via the SEQUENCE tag"
+                        );
+                        if ( $test->{params}{PRIMER_THERMODYNAMIC_ALIGNMENT} ) {
+                            like( $primer->self_any_th, qr/-?\d+(\.\d+)?/,
+                                "value from self-end tag is a number" );
+                        }
+                        else {
+                            like( $primer->self_any, qr/-?\d+(\.\d+)?/,
+                                "value from self-end tag is a number" );
+                        }
+                        is( $primer->tm, $primer->melting_temp,
+"the auto-generated method to access the value of tag TM returns the same as the 'meting_temp' method"
+                        );
+
+                        is( $primer->rank, 0, 'rank of the first primer is 0' );
+                        like( $primer->run_description, qr/considered/,
+"The primer's description contain the word 'considered'"
+                        );
                     }
-
 
                     # If a location for the pair is provided in the expectation
                     # check it here. This is useful to check that some of
                     # the parameters (such as region contraints) have been
                     # passed on to primer3 correctly
-                    SKIP: {
+                  SKIP: {
                         skip( "no location given", 1 )
                           if !defined $test->{expect}{loc_pair};
                         my ( $start, $end ) = @{ $test->{expect}{loc_pair} };
@@ -308,7 +345,7 @@ SKIP: {
     # test the primer3 settings file with the first set of
     # parameters. The settigns file sets min Tm to 70, so
     # if it was applied then this design should fail now
-    SKIP: {
+  SKIP: {
         skip( "tests for primer3_setting_file which require primer3 v2.x", 1 )
           if $major_version < 2;
         my $settings_file = test_input_file('primer3_settings.txt');
