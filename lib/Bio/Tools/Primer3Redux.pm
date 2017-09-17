@@ -3,7 +3,6 @@
 # OWNER:    2006-2016 Chris Fields
 # LICENSE:  Perl_5
 
-
 package Bio::Tools::Primer3Redux;
 
 use strict;
