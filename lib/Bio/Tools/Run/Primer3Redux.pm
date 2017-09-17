@@ -540,16 +540,16 @@ sub _do_run {
     # file output
     if ($out) {
         if($self->version_check>=version->declare('v2.0.0')){
-            $str.= "-output=".$out. " <". $file;
-            $status=system ($str);
+            $str.= "-output=".$out. " < ". $file;
+            $status = system($str);
         }
         else {
             $str .= "< $file > $out";
-        my $status = system($str);
+            $status = system($str);
         }
         if($status || !-e $out || -z $out ) {
             my $error = ($!) ? "$! Status: $status" : "Status: $status";
-            $self->throw( "Primer3 call crashed: $error \n[command $str]\n");
+            $self->throw( "Primer3 call crashed: $error \n[command: $str]\n");
             return undef;
         }
         if ($obj && ref($obj)) {
@@ -582,6 +582,7 @@ sub _generate_input_file {
     # and write access to primer3, therefore,
     # we can't use a simple pipe.
     my ($self, $args, $seqs) = @_;
+
     my ($tmpfh, $tmpfile) = $self->io->tempfile();
 
     # this is a hack to get around interface issues and conflicts when passing
@@ -710,36 +711,6 @@ refactoring of the original Primer3 module written by Rob Edwards. See
 http://primer3.sourceforge.net for details and to download the software. This
 module should work for primer3 release 1 and above but is not guaranteed to work
 with earlier versions.
-
-=head1 FEEDBACK
-
-=head2 Mailing Lists
-
-User feedback is an integral part of the evolution of this and other
-Bioperl modules. Send your comments and suggestions preferably to one
-of the Bioperl mailing lists.  Your participation is much appreciated.
-
-  bioperl-l@bioperl.org                  - General discussion
-  http://www.bioperl.org/MailList.html             - About the mailing lists
-
-=head2 Support
-
-Please direct usage questions or support issues to the mailing list:
-
-L<bioperl-l@bioperl.org>
-
-rather than to the module maintainer directly. Many experienced and
-reponsive experts will be able look at the problem and quickly
-address it. Please include a thorough description of the problem
-with code and data examples if at all possible.
-
-=head2 Reporting Bugs
-
-Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via the
-web:
-
-  http://bugzilla.open-bio.org/
 
 =head1 CONTRIBUTORS
 
