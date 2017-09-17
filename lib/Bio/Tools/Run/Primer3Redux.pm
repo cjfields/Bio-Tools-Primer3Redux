@@ -1,8 +1,3 @@
-# ABSTRACT: Create input for and work with the output from the program primer3
-# AUTHOR:   Chris Fields <cjfields@cpan.org>
-# OWNER:    2006-2016 Chris Fields
-# LICENSE:  Perl_5
-
 package Bio::Tools::Run::Primer3Redux;
 
 use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
@@ -645,14 +640,11 @@ sub _generate_input_file {
 
 __END__
 
-# BioPerl module for Bio::Tools::Run::Primer3Redux
-#
-# Copyright Chad Matsalla, Rob Edwards, Chris Fields
-#
-# You may distribute this module under the same terms as perl itself
-# POD documentation - main docs before the code
-
-=head1 SYNOPSIS
+# ABSTRACT: Create input for and work with the output from the program primer3
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+# SYNOPSIS:
 
   # design some primers.
   # the output will be put into temp.out
@@ -699,7 +691,7 @@ __END__
 
   print "There were ", $results->num_primer_pairs, " primer pairs\n";
 
-=head1 DESCRIPTION
+# DESCRIPTION:
 
 Bio::Tools::Run::Primer3Redux creates the input files needed to design primers
 using primer3 and provides mechanisms to access data in the primer3
@@ -711,37 +703,7 @@ http://primer3.sourceforge.net for details and to download the software. This
 module should work for primer3 release 1 and above but is not guaranteed to work
 with earlier versions.
 
-=head1 FEEDBACK
-
-=head2 Mailing Lists
-
-User feedback is an integral part of the evolution of this and other
-Bioperl modules. Send your comments and suggestions preferably to one
-of the Bioperl mailing lists.  Your participation is much appreciated.
-
-  bioperl-l@bioperl.org                  - General discussion
-  http://www.bioperl.org/MailList.html             - About the mailing lists
-
-=head2 Support
-
-Please direct usage questions or support issues to the mailing list:
-
-L<bioperl-l@bioperl.org>
-
-rather than to the module maintainer directly. Many experienced and
-reponsive experts will be able look at the problem and quickly
-address it. Please include a thorough description of the problem
-with code and data examples if at all possible.
-
-=head2 Reporting Bugs
-
-Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via the
-web:
-
-  http://bugzilla.open-bio.org/
-
-=head1 CONTRIBUTORS
+# CONTRIBUTORS:
 
 Rob Edwards redwards@utmem.edu
 Chad Matsalla bioinformatics1@dieselwurks.com
@@ -751,20 +713,11 @@ Brian Osborne osborne1-at-optonline.net
 Chris Fields cjfields-at-bioperl-dot-org
 Frank Schwach fs5-at-sanger.ac.uk
 
-=head1 SEE ALSO
+# SEE ALSO:
 
 L<Bio::Tools::Primer3>
 
-=head1 APPENDIX
-
-The rest of the documentation details each of the object methods.
-Internal methods are usually preceded with a _
-
-=cut
-
-# Let the code begin...
-
-=head2 new()
+=method new()
 
  Title   : new()
  Usage   : my $primer3 = Bio::Tools::Run::Primer3->new(-file=>$file) to read
@@ -780,9 +733,7 @@ Internal methods are usually preceded with a _
            -p3_settings_file :(optional) path to the settings file. Supported only by primer3 version 2 or above.
            -verbose :(optional) boolean value to set verbose output.
 
-=cut
-
-=head2 program_name
+=method program_name
 
  Title   : program_name
  Usage   : $primer3->program_name()
@@ -790,9 +741,7 @@ Internal methods are usually preceded with a _
  Returns:  string
  Args    : None
 
-=cut
-
-=head2 program_dir
+=method program_dir
 
  Title   : program_dir
  Usage   : $primer3->program_dir($dir)
@@ -800,9 +749,7 @@ Internal methods are usually preceded with a _
  Returns :  string
  Args    :
 
-=cut
-
-=head2  version_check
+=method version_check
 
  Title   : version_check
  Usage   : $v = $prog->version_check();
@@ -812,9 +759,7 @@ Internal methods are usually preceded with a _
  Args    : none
  Note    : This was previously known as Bio::Tools::Run::Primer3Redux::version, and renamed to avoid confusion with version.pm
 
-=cut
-
-=head2 set_parameters()
+=method set_parameters()
 
  Title   : set_parameters()
  Usage   : $primer3->set_parameters(key=>value)
@@ -824,9 +769,7 @@ Internal methods are usually preceded with a _
  Notes   : To set individual parameters use the associated method:
            $primer3->PRIMER_MAX_TM(40)
 
-=cut
-
-=head2 get_parameters
+=method get_parameters
 
  Title    : get_parameters
  Usage    : $obj->get_parameters
@@ -834,9 +777,7 @@ Internal methods are usually preceded with a _
  Returns  :
  Args     :
 
-=cut
-
-=head2 reset_parameters()
+=method reset_parameters()
 
  Title   : reset_parameters()
  Usage   : $primer3->reset_parameters()
@@ -845,9 +786,7 @@ Internal methods are usually preceded with a _
  Args    : none; to reset specific targets call the specific method for that
            target (i.e. $primer3->PRIMER_MAX_TM(undef))
 
-=cut
-
-=head2 p3_settings_file()
+=method p3_settings_file()
 
  Title  : p3settingsfile()
  Usage  : $primer3->p3settingsfile($file_path);
@@ -856,9 +795,7 @@ Internal methods are usually preceded with a _
  Args   : $file_path A valid file path to the settings file.
  Note   : This argument only works in primer3 version 2 or above.
 
-=cut
-
-=head2 run
+=method run
 
  Title   : run
  Usage   : $primer3->run;
@@ -869,9 +806,7 @@ Internal methods are usually preceded with a _
            See the Bio::Tools::Primer3 documentation for those functions.
  Args    : Bio::Seq object(s) to use as SEQUENCE_TEMPLATE(s)
 
-=cut
-
-=head2 _do_run
+=method _do_run
 
  Title   : _do_run
  Usage   : INTERNAL
@@ -882,5 +817,3 @@ Internal methods are usually preceded with a _
            If 'task' given, parameter 'PRIMER_TASK' is set to the given task,
            otherwise, the 'PRIMER_TASK' parameter is used to detmine what to do.
            If that too isn't set the primer3 will default to pick_pcr_primers
-
-=cut

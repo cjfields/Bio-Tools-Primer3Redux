@@ -1,9 +1,3 @@
-# ABSTRACT: BioPerl-based tools for Primer3 (redone)
-# AUTHOR:   Chris Fields <cjfields@cpan.org>
-# OWNER:    2006-2016 Chris Fields
-# LICENSE:  Perl_5
-
-
 package Bio::Tools::Primer3Redux;
 
 use strict;
@@ -100,7 +94,11 @@ __END__
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code
 
-=head1 SYNOPSIS
+# ABSTRACT: BioPerl-based tools for Primer3 (redone)
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+# SYNOPSIS:
 
  # parse primer3 output to get some data
  # this is also called from Bio::Tools::Run::Primer3Redux
@@ -117,7 +115,7 @@ __END__
     }
  }
 
-=head1 DESCRIPTION
+# DESCRIPTION:
 
 Bio::Tools::Primer3Redux creates the input files needed to design primers using
 primer3 and provides mechanisms to access data in the primer3 output files.
@@ -132,7 +130,7 @@ Rob Edwards, itself largely based on one written by Chad Matsalla
 and the previous Primer3 module, this has been redubbed
 Bio::Tools::Primer3Redux.
 
-=head1 CONTRIBUTORS
+# CONTRIBUTORS:
 
   Rob Edwards
 
@@ -142,16 +140,7 @@ Bio::Tools::Primer3Redux.
 
   Based heavily on work of Chad Matsalla
 
-=head1 APPENDIX
-
-The rest of the documentation details each of the object methods.
-Internal methods are usually preceded with a _
-
-=cut
-
-# Let the code begin...
-
-=head2 new
+=method new
 
   Title   : new()
   Usage   : my $primer3 = Bio::Tools::Primer3->new(-file=>$file)
@@ -164,9 +153,7 @@ Internal methods are usually preceded with a _
   Notes   :
   Status  : stable
 
-=cut
-
-=head2 next_result
+=method next_result
 
   Title    : next_result
   Usage    : $obj->next_result
@@ -175,9 +162,7 @@ Internal methods are usually preceded with a _
   Args     : none
   Status   : stable
 
-=cut
-
-=head2 start_document
+=method start_document
 
  Title    : start_document
  Usage    : $obj->start_document
@@ -185,9 +170,7 @@ Internal methods are usually preceded with a _
  Returns  : none
  Args     : none
 
-=cut
-
-=head2 end_document
+=method end_document
 
  Title    : end_document
  Usage    : $obj->end_document
@@ -195,4 +178,3 @@ Internal methods are usually preceded with a _
  Returns  : L<Bio::Tools::Primer3Redux::Result>
  Args     : none
 
-=cut
