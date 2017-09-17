@@ -1,7 +1,8 @@
 Revision history for Bio-Tools-Primer3Redux
 
 {{$NEXT}}
-
+ 
+ * Working with primer3 v2.3.7
  * Minor version bump to catch missing dependencies.
 
 0.09      2011-06-10 23:02:48 America/Chicago
