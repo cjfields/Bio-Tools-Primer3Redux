@@ -1,3 +1,9 @@
+# ABSTRACT: BioPerl-based tools for Primer3 (redone)
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
+
 package Bio::Tools::Primer3Redux;
 
 use strict;
@@ -94,11 +100,7 @@ __END__
 # You may distribute this module under the same terms as perl itself
 # POD documentation - main docs before the code
 
-# ABSTRACT: BioPerl-based tools for Primer3 (redone)
-# AUTHOR:   Chris Fields <cjfields@cpan.org>
-# OWNER:    2006-2016 Chris Fields
-# LICENSE:  Perl_5
-# SYNOPSIS:
+=head1 SYNOPSIS
 
  # parse primer3 output to get some data
  # this is also called from Bio::Tools::Run::Primer3Redux
@@ -115,7 +117,7 @@ __END__
     }
  }
 
-# DESCRIPTION:
+=head1 DESCRIPTION
 
 Bio::Tools::Primer3Redux creates the input files needed to design primers using
 primer3 and provides mechanisms to access data in the primer3 output files.
@@ -130,7 +132,7 @@ Rob Edwards, itself largely based on one written by Chad Matsalla
 and the previous Primer3 module, this has been redubbed
 Bio::Tools::Primer3Redux.
 
-# CONTRIBUTORS:
+=head1 CONTRIBUTORS
 
   Rob Edwards
 
@@ -140,7 +142,16 @@ Bio::Tools::Primer3Redux.
 
   Based heavily on work of Chad Matsalla
 
-=method new
+=head1 APPENDIX
+
+The rest of the documentation details each of the object methods.
+Internal methods are usually preceded with a _
+
+=cut
+
+# Let the code begin...
+
+=head2 new
 
   Title   : new()
   Usage   : my $primer3 = Bio::Tools::Primer3->new(-file=>$file)
@@ -153,7 +164,9 @@ Bio::Tools::Primer3Redux.
   Notes   :
   Status  : stable
 
-=method next_result
+=cut
+
+=head2 next_result
 
   Title    : next_result
   Usage    : $obj->next_result
@@ -162,7 +175,9 @@ Bio::Tools::Primer3Redux.
   Args     : none
   Status   : stable
 
-=method start_document
+=cut
+
+=head2 start_document
 
  Title    : start_document
  Usage    : $obj->start_document
@@ -170,7 +185,9 @@ Bio::Tools::Primer3Redux.
  Returns  : none
  Args     : none
 
-=method end_document
+=cut
+
+=head2 end_document
 
  Title    : end_document
  Usage    : $obj->end_document
@@ -178,3 +195,4 @@ Bio::Tools::Primer3Redux.
  Returns  : L<Bio::Tools::Primer3Redux::Result>
  Args     : none
 
+=cut

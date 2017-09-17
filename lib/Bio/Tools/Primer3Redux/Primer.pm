@@ -1,3 +1,10 @@
+# ABSTRACT: Simple Decorator of a Bio::SeqFeature::Generic with convenience
+# methods for retrieving Tm, GC, validating primer seq against attached
+# sequence, etc.
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 package Bio::Tools::Primer3Redux::Primer;
 
 use strict;
@@ -83,17 +90,7 @@ __END__
 #
 # POD documentation - main docs before the code
 
-
-# Let the code begin...
-
-# NAME: Bio::Tools::Primer3Redux::Primer - Simple Decorator of a Bio::SeqFeature::Generic with convenience
-# ABSTRACT: Simple Decorator of a Bio::SeqFeature::Generic with convenience
-# methods for retrieving Tm, GC, validating primer seq against attached
-# sequence, etc.
-# AUTHOR:   Chris Fields <cjfields@cpan.org>
-# OWNER:    2006-2016 Chris Fields
-# LICENSE:  Perl_5
-# SYNOPSIS:
+=head1 SYNOPSIS
 
  # get the Bio::Tools::Primer3Redux::Primer through Bio::Tools::Primer3Redux...
 
@@ -111,7 +108,7 @@ __END__
  # if primer3 EXPLAIN settings are used...
  print "Run parameters:".$primer->run_description."\n";
 
-# DESCRIPTION:
+=head1 DESCRIPTION
 
 This class is a simple subclass of Bio::SeqFeature::Generic that adds
 convenience accessor methods for primer-specific data, such as Tm, GC content,
@@ -119,11 +116,39 @@ and other interesting bits of information returned from Primer3.  Beyond that,
 the data can be persisted just as any Bio::SeqFeatureI; it doesn't add any
 additional primary attributes that may not be persisted effectively.
 
-# CONTRIBUTORS:
+=head1 FEEDBACK
+
+=head2 Mailing Lists
+
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to
+the Bioperl mailing list.  Your participation is much appreciated.
+
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Reporting Bugs
+
+Report bugs to the Bioperl bug tracking system to help us keep track
+of the bugs and their resolution. Bug reports can be submitted via
+the web:
+
+  http://bugzilla.open-bio.org/
+
+=head1 CONTRIBUTORS
 
 Additional contributors names and emails here
 
-=method oligo_type
+=head1 APPENDIX
+
+The rest of the documentation details each of the object methods.
+Internal methods are usually preceded with a _
+
+=cut
+
+# Let the code begin...
+
+=head2 oligo_type
 
  Title    : oligo_type
  Usage    : $obj->oligo_type
@@ -132,7 +157,9 @@ Additional contributors names and emails here
  Args     : optional string
  Note     : simple alias for primary_tag
 
-=method rank
+=cut
+
+=head2 rank
 
  Title    : rank
  Usage    : $obj->rank
@@ -140,7 +167,9 @@ Additional contributors names and emails here
  Returns  : rank
  Args     : optional string
 
-=method validate_seq
+=cut
+
+=head2 validate_seq
 
  Title    : validate_seq
  Usage    : $obj->validate_seq
@@ -149,7 +178,9 @@ Additional contributors names and emails here
  Returns  : True (1) if validated, False (0) and a warning otherwise
  Args     : none
 
-=method melting_temp
+=cut
+
+=head2 melting_temp
 
  Title    : melting_temp
  Usage    : $obj->melting_temp
@@ -157,7 +188,9 @@ Additional contributors names and emails here
  Returns  : float
  Args     : optional Tm (possibly calculated via other means)
 
-=method gc_content
+=cut
+
+=head2 gc_content
 
  Title    : gc
  Usage    : $obj->gc
@@ -165,7 +198,9 @@ Additional contributors names and emails here
  Returns  : float (percent)
  Args     : optional GC content (possibly calculated via other means)
 
-=method run_description
+=cut
+
+=head2 run_description
 
  Title    : run_description
  Usage    : $obj->run_description
@@ -173,7 +208,9 @@ Additional contributors names and emails here
  Returns  : string
  Args     : optional description
 
-=method AUTOLOAD
+=cut
+
+=head2 AUTOLOAD
 
  Title   : AUTOLOAD
  Function: Used to access tags (properties) of the primer as given by primer3
@@ -188,3 +225,5 @@ Additional contributors names and emails here
            see primer3 doc for available output tags
  Args    : none
  Returns : value for the requested tag, if tag is present, otherwise undef
+
+=cut

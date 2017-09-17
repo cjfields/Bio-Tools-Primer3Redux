@@ -1,3 +1,8 @@
+# ABSTRACT: Result class for Primer3 data
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 package Bio::Tools::Primer3Redux::Result;
 
 use strict;
@@ -336,12 +341,17 @@ sub _dummy_seq_template_from_primers{
 
 __END__
 
-# ABSTRACT: Result class for Primer3 data
-# AUTHOR:   Chris Fields <cjfields@cpan.org>
-# OWNER:    2006-2016 Chris Fields
-# LICENSE:  Perl_5
-# NAME: Bio::Tools::Primer3Redux::Result - Result class for Primer3 data
-# SYNOPSIS:
+# BioPerl module for Bio::Tools::Primer3Redux::Result
+#
+# Cared for by Chris Fields cjfields at bioperl dot org
+#
+# Copyright Chris Fields
+#
+# You may distribute this module under the same terms as perl itself
+#
+# POD documentation - main docs before the code
+
+=head1 SYNOPSIS
 
     # parse a Primer3 report, and get Bio::Tools::Primer3Redux::Result
     while (my $result = $parser->next_result) {
@@ -356,7 +366,7 @@ __END__
         say $rp->seq->seq;
     }
 
-# DESCRIPTION:
+=head1 DESCRIPTION
 
 This is a simple holder class for Primer3 sequence results. The sequence used by
 default is the one returned in the Primer3 results, but one can pass in a
@@ -378,11 +388,118 @@ check the result object for errors like so:
     # handle the situation
   }
 
-# CONTRIBUTORS:
+=head1 FEEDBACK
+
+=head2 Mailing Lists
+
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to
+the Bioperl mailing list.  Your participation is much appreciated.
+
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Reporting Bugs
+
+Report bugs to the Bioperl bug tracking system to help us keep track
+of the bugs and their resolution. Bug reports can be submitted via
+the web:
+
+  http://bugzilla.open-bio.org/
+
+=head1 CONTRIBUTORS
 
 Nathan Hillson
 
-=method attach_seq
+=head1 APPENDIX
+
+The rest of the documentation details each of the object methods.
+Internal methods are usually preceded with a _
+
+=cut
+
+# Let the code begin...
+
+# BioPerl module for Bio::Tools::Primer3Redux::Result
+#
+# Cared for by Chris Fields cjfields at bioperl dot org
+#
+# Copyright Chris Fields
+#
+# You may distribute this module under the same terms as perl itself
+#
+# POD documentation - main docs before the code
+
+=head1 SYNOPSIS
+
+    # parse a Primer3 report, and get Bio::Tools::Primer3Redux::Result
+    while (my $result = $parser->next_result) {
+        (say "primer design failed" and next) if $result->errors;
+
+        say $result->num_primer_pairs;
+        my $pair = $result->next_primer_pair;
+
+        my ($fp, $rp) = ($pair->forward_primer, $pair->reverse_primer);
+
+        say $fp->seq->seq;
+        say $rp->seq->seq;
+    }
+
+=head1 DESCRIPTION
+
+This is a simple holder class for Primer3 sequence results. The sequence used by
+default is the one returned in the Primer3 results, but one can pass in a
+(more-SeqFeature/Annotation-rich) version as a Bio::Seq using attach_seq() (see
+below for more on this).
+
+This parser will attach any lazily-generated features to that Bio::Seq object.
+The sequence can be retrieved via get_seq() at any point, such as prior to
+the end of a parse). To retrieve a sequence guaranteed to have all
+Primer/PrimerPair data attached, use get_processed_seq(). Switching seqs will
+cause a new batch of features to be generated and attached.
+
+Please note that primer3 does not terminate on errors during primer design
+(e.g. due to input parameters that are impossible to fulfill).
+To check if errors or warnings were produced, it is recommended to always
+check the result object for errors like so:
+
+  if ($result->errors){
+    # handle the situation
+  }
+
+=head1 FEEDBACK
+
+=head2 Mailing Lists
+
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to
+the Bioperl mailing list.  Your participation is much appreciated.
+
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Reporting Bugs
+
+Report bugs to the Bioperl bug tracking system to help us keep track
+of the bugs and their resolution. Bug reports can be submitted via
+the web:
+
+  http://bugzilla.open-bio.org/
+
+=head1 CONTRIBUTORS
+
+Nathan Hillson
+
+=head1 APPENDIX
+
+The rest of the documentation details each of the object methods.
+Internal methods are usually preceded with a _
+
+=cut
+
+# Let the code begin...
+
+=head2 attach_seq
 
  Title    : attach_seq
  Usage    : $obj->attach_seq
@@ -392,7 +509,9 @@ Nathan Hillson
  Note     : calling this method resets the feature iterators to prevent (for
             instance) issues with references
 
-=method get_seq
+=cut
+
+=head2 get_seq
 
  Title    : get_seq
  Usage    : $obj->get_seq
@@ -400,7 +519,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method get_processed_seq
+=cut
+
+=head2 get_processed_seq
 
  Title    : get_processed_seq
  Usage    : $obj->get_processed_seq
@@ -410,7 +531,9 @@ Nathan Hillson
  Note     : unlike get_seq(), this guarantees getting back the full
             sequence with attached Primer/PrimerPair SeqFeatureI
 
-=method num_primer_pairs
+=cut
+
+=head2 num_primer_pairs
 
  Title    : num_primer_pairs
  Usage    : $obj->num_primer_pairs
@@ -418,7 +541,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method next_left_primer
+=cut
+
+=head2 next_left_primer
 
  Title    : next_left_primer
  Usage    : $obj->next_left_primer
@@ -426,7 +551,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method next_right_primer
+=cut
+
+=head2 next_right_primer
 
  Title    : next_right_primer
  Usage    : $obj->next_right_primer
@@ -434,7 +561,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method next_internal_oligo
+=cut
+
+=head2 next_internal_oligo
 
  Title    : next_internal_oligo
  Usage    : $obj->next_internal_oligo
@@ -442,7 +571,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method next_primer_pair
+=cut
+
+=head2 next_primer_pair
 
  Title    : next_primer_pair
  Usage    : $obj->next_primer_pair
@@ -450,7 +581,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method persistent_data
+=cut
+
+=head2 persistent_data
 
  Title    : persistent_data
  Usage    : $obj->persistent_data
@@ -458,7 +591,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method run_parameters
+=cut
+
+=head2 run_parameters
 
  Title    : run_parameters
  Usage    : $obj->run_parameters
@@ -466,7 +601,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method run_parameter
+=cut
+
+=head2 run_parameter
 
  Title    : run_parameter
  Usage    : $obj->run_parameter('FOO')
@@ -474,7 +611,9 @@ Nathan Hillson
  Returns  :
  Args     :
 
-=method warnings
+=cut
+
+=head2 warnings
 
  Title   : warnings
  Function: returns a list of the warning messages returned by primer3, if any
@@ -482,7 +621,9 @@ Nathan Hillson
  Args    : none
  Returns : Array of messages
 
-=method errors
+=cut
+
+=head2 errors
 
  Title   : errors
  Function: returns a list of the error messages returned by primer3, if any
@@ -490,7 +631,9 @@ Nathan Hillson
  Args    : none
  Returns : Array of messages
 
-=method rewind
+=cut
+
+=head2 rewind
 
  Title    : rewind
  Usage    : $obj->rewind('primer_pair')
@@ -498,3 +641,4 @@ Nathan Hillson
  Returns  :
  Args     :
 
+=cut

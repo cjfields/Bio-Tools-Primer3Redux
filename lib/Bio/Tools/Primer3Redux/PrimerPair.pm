@@ -1,3 +1,10 @@
+# ABSTRACT: Simple Decorator of a Bio::SeqFeature::Generic with convenience
+# methods for retrieving left and right primers, internal oligos, and any
+# amplicon-related information
+# AUTHOR:   Chris Fields <cjfields@cpan.org>
+# OWNER:    2006-2016 Chris Fields
+# LICENSE:  Perl_5
+
 package Bio::Tools::Primer3Redux::PrimerPair;
 
 use strict;
@@ -49,14 +56,17 @@ sub internal_oligo {
 
 __END__
 
-# ABSTRACT: Simple Decorator of a Bio::SeqFeature::Generic with convenience
-# methods for retrieving left and right primers, internal oligos, and any
-# amplicon-related information
-# AUTHOR:   Chris Fields <cjfields@cpan.org>
-# OWNER:    2006-2016 Chris Fields
-# LICENSE:  Perl_5
-# NAME: Bio::Tools::Primer3Redux::PrimerPair - Simple Decorator of a Bio::SeqFeature::Generic with convenience
-# DESCRIPTION:
+# BioPerl module for Bio::Tools::Primer3Redux::PrimerPair
+#
+# Cared for by Chris Fields cjfields at bioperl dot org
+#
+# Copyright Chris Fields
+#
+# You may distribute this module under the same terms as perl itself
+#
+# POD documentation - main docs before the code
+
+=head1 DESCRIPTION
 
 Bio::Tools::Primer3Redux::PrimerPair acts as a simple SeqFeature that bundles
 primer pair data together into one object.  This object can be used to retrieve
@@ -64,16 +74,46 @@ the amplicon sequence, the forward/reversion (left/right) primers, and any
 internal oligos.  Furthermore, any primer information relative to the product
 is included as SeqFeature tags.
 
-# CONTRIBUTORS:
+=head1 FEEDBACK
+
+=head2 Mailing Lists
+
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to
+the Bioperl mailing list.  Your participation is much appreciated.
+
+  bioperl-l@bioperl.org                  - General discussion
+  http://bioperl.org/wiki/Mailing_lists  - About the mailing lists
+
+=head2 Reporting Bugs
+
+Report bugs to the Bioperl bug tracking system to help us keep track
+of the bugs and their resolution. Bug reports can be submitted via
+the web:
+
+  http://bugzilla.open-bio.org/
+
+=head1 CONTRIBUTORS
 
 Additional contributors names and emails here
 
-=method left_primer
+=head1 APPENDIX
+
+The rest of the documentation details each of the object methods.
+Internal methods are usually preceded with a _
+
+=cut
+
+# Let the code begin...
+
+=head2 left_primer
 
  Title    : left_primer
  Note     : Alias of forward_primer()
 
-=method forward_primer
+=cut
+
+=head2 forward_primer
 
  Title    : forward_primer
  Usage    : $obj->forward_primer
@@ -81,12 +121,16 @@ Additional contributors names and emails here
  Returns  : Bio::Tools::Primer3Redux::Primer
  Args     : Optional Bio::Tools::Primer3Redux::Primer
 
-=method right_primer
+=cut
+
+=head2 right_primer
 
  Title    : right_primer
  Note     : alias of reverse_primer()
 
-=method reverse_primer
+=cut
+
+=head2 reverse_primer
 
  Title    : reverse_primer
  Usage    : $obj->reverse_primer
@@ -94,7 +138,9 @@ Additional contributors names and emails here
  Returns  : Bio::Tools::Primer3Redux::Primer
  Args     : Optional Bio::Tools::Primer3Redux::Primer
 
-=method internal_oligo
+=cut
+
+=head2 internal_oligo
 
  Title    : internal_oligo
  Usage    : $obj->internal_oligo
@@ -102,3 +148,4 @@ Additional contributors names and emails here
  Returns  : Bio::Tools::Primer3Redux::Primer
  Args     : Optional Bio::Tools::Primer3Redux::Primer
 
+=cut
