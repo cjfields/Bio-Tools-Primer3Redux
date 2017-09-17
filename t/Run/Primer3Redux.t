@@ -47,6 +47,7 @@ my @tests = (
       params     => {
           'PRIMER_TASK'               => 'pick_pcr_primers',
           'PRIMER_SALT_CORRECTIONS'   => 1,
+          'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
           'PRIMER_TM_FORMULA'         => 1,
           'PRIMER_PRODUCT_SIZE_RANGE' => '100-250',
           'PRIMER_EXPLAIN_FLAG'       => 1,
@@ -78,6 +79,7 @@ my @tests = (
       p3_version => version->declare("2.0.0"),
       params     => {
           'PRIMER_TASK'           => 'pick_pcr_primers',
+          'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
           'PRIMER_MAX_POLY_X'     => 3,   # no runs of more than 2 of same nuc
           'PRIMER_MIN_TM'         => 55,
           'PRIMER_MAX_TM'         => 65,
@@ -95,6 +97,7 @@ my @tests = (
           'PRIMER_TASK'                         => 'pick_pcr_primers',
           'PRIMER_SALT_CORRECTIONS'             => 1,
           'PRIMER_TM_FORMULA'                   => 1,
+          'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
           'PRIMER_EXPLAIN_FLAG'                 => 1,
           'PRIMER_PRODUCT_MIN_TM'               => 60,
           'PRIMER_PRODUCT_SIZE_RANGE'           => '50-200',
@@ -113,6 +116,7 @@ my @tests = (
       'PRIMER_TASK'               => 'pick_pcr_primers',
       'PRIMER_SALT_CORRECTIONS'   => 1,
       'PRIMER_TM_FORMULA'         => 1,
+      'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
       'PRIMER_EXPLAIN_FLAG'       => 1,
       'SEQUENCE_PRIMER'          => 'AAAAAAAAAAAAAAAAAAA', # this is not on the SEQUENCE_TEMPLATE, so will cause error
     },
@@ -130,6 +134,7 @@ my @tests = (
       PRIMER_MIN_TM=>50,
       PRIMER_EXPLAIN_FLAG=>1,
       PRIMER_TM_FORMULA=>1,
+     'PRIMER_THERMODYNAMIC_PARAMETERS_PATH' => $primer3_config_dir,
       SEQUENCE_PRIMER=>'AGGCTAGGCGAGCTGAAAAATCCTAC',
       SEQUENCE_PRIMER_REVCOMP=>'GTAGGATTTTTCAGTCGAAGGGGCAT',
     },
@@ -323,4 +328,4 @@ SKIP: {
 
 }    # skip if no executable
 
-unlink('mlc') if -e 'mlc';
+#unlink('mlc') if -e 'mlc';
