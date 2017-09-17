@@ -3,125 +3,6 @@
 # OWNER:    2006-2016 Chris Fields
 # LICENSE:  Perl_5
 
-# BioPerl module for Bio::Tools::Run::Primer3Redux
-#
-# Copyright Chad Matsalla, Rob Edwards, Chris Fields
-#
-# You may distribute this module under the same terms as perl itself
-# POD documentation - main docs before the code
-
-=head1 SYNOPSIS
-
-  # design some primers.
-  # the output will be put into temp.out
-  use Bio::Tools::Run::Primer3Redux;
-  use Bio::SeqIO;
-
-  my $seqio = Bio::SeqIO->new(-file=>'data/dna1.fa');
-  my $seq = $seqio->next_seq;
-
-  my $primer3 = Bio::Tools::Run::Primer3Redux->new(-outfile => "temp.out",
-                                            -path => "/usr/bin/primer3_core");
-
-  # or after the fact you can change the program_name
-  $primer3->program_name('my_superfast_primer3');
-
-  unless ($primer3->executable) {
-    print STDERR "primer3 can not be found. Is it installed?\n";
-    exit(-1)
-  }
-
-  # set the maximum and minimum Tm of the primer
-  $primer3->set_parameters('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
-
-  # Design the primers. This runs primer3 and returns a
-  # Bio::Tools::Primer3::result object with the results
-  # Primer3 can run in several modes (see explanation for
-  # 'PRIMER_TASK' in the primer3 doccumentation). To run a task,
-  # either call it by its PRIMER_TASK name as in these examples:
-  $pcr_primer_results = $primer3->pick_pcr_primers($seq);
-  $pcr_and_hyb_results = $primer3->pick_pcr_primers_and_hyb_probe( $seq );
-  $check_results = $primer3->check_primers();
-
-  # Alternatively, explicitly set the PRIMER_TASK parameter and
-  # use the generic 'run' method (this is mainly here for backwards
-  # compatibility) :
-  $primer3->PRIMER_TASK( 'pick_left_only' );
-  $result = $primer3->run( $seq );
-
-  # If no task is set and the 'run' method is called, primer3 will default to
-  # pick pcr primers.
-
-  # see the Bio::Tools::Primer3Redux POD for
-  # things that you can get from this. For example:
-
-  print "There were ", $results->num_primer_pairs, " primer pairs\n";
-
-=head1 DESCRIPTION
-
-Bio::Tools::Run::Primer3Redux creates the input files needed to design primers
-using primer3 and provides mechanisms to access data in the primer3
-output files.
-
-This module a refactoring of the original BioPerl primer3 tools, themselves a
-refactoring of the original Primer3 module written by Rob Edwards. See
-http://primer3.sourceforge.net for details and to download the software. This
-module should work for primer3 release 1 and above but is not guaranteed to work
-with earlier versions.
-
-=head1 FEEDBACK
-
-=head2 Mailing Lists
-
-User feedback is an integral part of the evolution of this and other
-Bioperl modules. Send your comments and suggestions preferably to one
-of the Bioperl mailing lists.  Your participation is much appreciated.
-
-  bioperl-l@bioperl.org                  - General discussion
-  http://www.bioperl.org/MailList.html             - About the mailing lists
-
-=head2 Support
-
-Please direct usage questions or support issues to the mailing list:
-
-L<bioperl-l@bioperl.org>
-
-rather than to the module maintainer directly. Many experienced and
-reponsive experts will be able look at the problem and quickly
-address it. Please include a thorough description of the problem
-with code and data examples if at all possible.
-
-=head2 Reporting Bugs
-
-Report bugs to the Bioperl bug tracking system to help us keep track
-the bugs and their resolution.  Bug reports can be submitted via the
-web:
-
-  http://bugzilla.open-bio.org/
-
-=head1 CONTRIBUTORS
-
-Rob Edwards redwards@utmem.edu
-Chad Matsalla bioinformatics1@dieselwurks.com
-Shawn Hoon shawnh-at-stanford.edu
-Jason Stajich jason-at-bioperl.org
-Brian Osborne osborne1-at-optonline.net
-Chris Fields cjfields-at-bioperl-dot-org
-Frank Schwach fs5-at-sanger.ac.uk
-
-=head1 SEE ALSO
-
-L<Bio::Tools::Primer3>
-
-=head1 APPENDIX
-
-The rest of the documentation details each of the object methods.
-Internal methods are usually preceded with a _
-
-=cut
-
-# Let the code begin...
-
 package Bio::Tools::Run::Primer3Redux;
 
 use base qw(Bio::Root::Root Bio::Tools::Run::WrapperBase);
@@ -432,25 +313,6 @@ BEGIN {
 );
 }
 
-=head2 new()
-
- Title   : new()
- Usage   : my $primer3 = Bio::Tools::Run::Primer3->new(-file=>$file) to read
-           a primer3 output file.
-           my $primer3 = Bio::Tools::Run::Primer3->new(-seq=>sequence object)
-           design primers against sequence
- Function: Start primer3 working and adds a sequence. At the moment it
-           will not clear out the old sequence, but I suppose it should.
- Returns : Does not return anything. If called with a filename will allow
-           you to retrieve the results
- Args    : -outfile : file name send output results to
-           -path    : path to primer3 executable
-           -p3_settings_file :(optional) path to the settings file. Supported only by primer3 version 2 or above.
-           -verbose :(optional) boolean value to set verbose output.
-
-
-=cut
-
 sub new {
     my($class,@args) = @_;
     my $self = $class->SUPER::new(@args);
@@ -506,16 +368,6 @@ sub new {
     return $self;
 }
 
-=head2 program_name
-
- Title   : program_name
- Usage   : $primer3->program_name()
- Function: holds the program name
- Returns:  string
- Args    : None
-
-=cut
-
 sub program_name {
     my $self = shift;
     # if explicitly set, use that
@@ -534,16 +386,6 @@ sub program_name {
     # don't set permanently, use global
     return $PROGRAMNAME;
 }
-
-=head2 program_dir
-
- Title   : program_dir
- Usage   : $primer3->program_dir($dir)
- Function: returns the program directory, which may also be obtained from ENV variable.
- Returns :  string
- Args    :
-
-=cut
 
 sub program_dir {
     my ($self, $dir) = @_;
@@ -564,18 +406,6 @@ sub program_dir {
     return $self->{'program_dir'}
 }
 
-=head2  version_check
-
- Title   : version_check
- Usage   : $v = $prog->version_check();
- Function: Determine the version number of the program
- Example :
- Returns : a version.pm object in dotted-decimal form.
- Args    : none
- Note    : This was previously known as Bio::Tools::Run::Primer3Redux::version, and renamed to avoid confusion with version.pm
-
-=cut
-
 sub version_check {
     my ($self) = @_;
     return unless my $exe = $self->executable;
@@ -588,18 +418,6 @@ sub version_check {
     }
     return $self->{'_progversion'} || undef;
 }
-
-=head2 set_parameters()
-
- Title   : set_parameters()
- Usage   : $primer3->set_parameters(key=>value)
- Function: Sets parameters for the input file
- Returns : Returns the number of arguments added
- Args    : See the primer3 docs.
- Notes   : To set individual parameters use the associated method:
-           $primer3->PRIMER_MAX_TM(40)
-
-=cut
 
 sub set_parameters {
     my ($self, %args)=@_;
@@ -637,16 +455,6 @@ sub set_parameters {
     return $added_args;
 }
 
-=head2 get_parameters
-
- Title    : get_parameters
- Usage    : $obj->get_parameters
- Function :
- Returns  :
- Args     :
-
-=cut
-
 sub get_parameters {
     my $self = shift;
     my %args = map {$_->[0] => $_->[1]}
@@ -655,33 +463,11 @@ sub get_parameters {
     return %args;
 }
 
-=head2 reset_parameters()
-
- Title   : reset_parameters()
- Usage   : $primer3->reset_parameters()
- Function: Resets all parameters to be undef
- Returns : none
- Args    : none; to reset specific targets call the specific method for that
-           target (i.e. $primer3->PRIMER_MAX_TM(undef))
-
-=cut
-
 sub reset_parameters {
     my $self = shift;
     my %args = map {$_ => undef} sort keys %PARAMS;
     $self->_set_from_args(\%args, -methods => [sort keys %PARAMS]);
 }
-
-=head2 p3_settings_file()
-
- Title  : p3settingsfile()
- Usage  : $primer3->p3settingsfile($file_path);
- Function   : Getter/Setter for the Primer3 settings file.
- Returns    : A string containing the path of the named settings file.
- Args   : $file_path A valid file path to the settings file.
- Note   : This argument only works in primer3 version 2 or above.
-
-=cut
 
 sub p3_settings_file{
     my ($self, $file_path)=@_;
@@ -691,19 +477,6 @@ sub p3_settings_file{
         }
         else {$self->warn("p3_settings_file is only available on primer3 release 2 or above.")}
 }
-
-=head2 run
-
- Title   : run
- Usage   : $primer3->run;
- Function: Generic run method for the primer3 program. The PRIMER_TASK
-           must be defined either in the parameter set or it defaults to
-           'pick_pcr_primers'.
- Returns : A Bio::Tools::Primer3 object containing the results.
-           See the Bio::Tools::Primer3 documentation for those functions.
- Args    : Bio::Seq object(s) to use as SEQUENCE_TEMPLATE(s)
-
-=cut
 
 sub run {
    my($self, @seqs) = @_;
@@ -728,22 +501,6 @@ sub _create_run_methods {
         *{ __PACKAGE__ . '::' . $task } = $sub;
     }
 }
-
-
-
-=head2 _do_run
-
- Title   : _do_run
- Usage   : INTERNAL
- Function: Generate input file and run the primer3 program.
- Returns : A Bio::Tools::Primer3 object containing the results.
-           See the Bio::Tools::Primer3 documentation for those functions.
- Args    : sequence or ref to array of sequences, [task]
-           If 'task' given, parameter 'PRIMER_TASK' is set to the given task,
-           otherwise, the 'PRIMER_TASK' parameter is used to detmine what to do.
-           If that too isn't set the primer3 will default to pick_pcr_primers
-
-=cut
 
 sub _do_run {
     my($self, $seqs, $task) = @_;
@@ -885,3 +642,245 @@ sub _generate_input_file {
 }
 
 1;
+
+__END__
+
+# BioPerl module for Bio::Tools::Run::Primer3Redux
+#
+# Copyright Chad Matsalla, Rob Edwards, Chris Fields
+#
+# You may distribute this module under the same terms as perl itself
+# POD documentation - main docs before the code
+
+=head1 SYNOPSIS
+
+  # design some primers.
+  # the output will be put into temp.out
+  use Bio::Tools::Run::Primer3Redux;
+  use Bio::SeqIO;
+
+  my $seqio = Bio::SeqIO->new(-file=>'data/dna1.fa');
+  my $seq = $seqio->next_seq;
+
+  my $primer3 = Bio::Tools::Run::Primer3Redux->new(-outfile => "temp.out",
+                                            -path => "/usr/bin/primer3_core");
+
+  # or after the fact you can change the program_name
+  $primer3->program_name('my_superfast_primer3');
+
+  unless ($primer3->executable) {
+    print STDERR "primer3 can not be found. Is it installed?\n";
+    exit(-1)
+  }
+
+  # set the maximum and minimum Tm of the primer
+  $primer3->set_parameters('PRIMER_MIN_TM'=>56, 'PRIMER_MAX_TM'=>90);
+
+  # Design the primers. This runs primer3 and returns a
+  # Bio::Tools::Primer3::result object with the results
+  # Primer3 can run in several modes (see explanation for
+  # 'PRIMER_TASK' in the primer3 doccumentation). To run a task,
+  # either call it by its PRIMER_TASK name as in these examples:
+  $pcr_primer_results = $primer3->pick_pcr_primers($seq);
+  $pcr_and_hyb_results = $primer3->pick_pcr_primers_and_hyb_probe( $seq );
+  $check_results = $primer3->check_primers();
+
+  # Alternatively, explicitly set the PRIMER_TASK parameter and
+  # use the generic 'run' method (this is mainly here for backwards
+  # compatibility) :
+  $primer3->PRIMER_TASK( 'pick_left_only' );
+  $result = $primer3->run( $seq );
+
+  # If no task is set and the 'run' method is called, primer3 will default to
+  # pick pcr primers.
+
+  # see the Bio::Tools::Primer3Redux POD for
+  # things that you can get from this. For example:
+
+  print "There were ", $results->num_primer_pairs, " primer pairs\n";
+
+=head1 DESCRIPTION
+
+Bio::Tools::Run::Primer3Redux creates the input files needed to design primers
+using primer3 and provides mechanisms to access data in the primer3
+output files.
+
+This module a refactoring of the original BioPerl primer3 tools, themselves a
+refactoring of the original Primer3 module written by Rob Edwards. See
+http://primer3.sourceforge.net for details and to download the software. This
+module should work for primer3 release 1 and above but is not guaranteed to work
+with earlier versions.
+
+=head1 FEEDBACK
+
+=head2 Mailing Lists
+
+User feedback is an integral part of the evolution of this and other
+Bioperl modules. Send your comments and suggestions preferably to one
+of the Bioperl mailing lists.  Your participation is much appreciated.
+
+  bioperl-l@bioperl.org                  - General discussion
+  http://www.bioperl.org/MailList.html             - About the mailing lists
+
+=head2 Support
+
+Please direct usage questions or support issues to the mailing list:
+
+L<bioperl-l@bioperl.org>
+
+rather than to the module maintainer directly. Many experienced and
+reponsive experts will be able look at the problem and quickly
+address it. Please include a thorough description of the problem
+with code and data examples if at all possible.
+
+=head2 Reporting Bugs
+
+Report bugs to the Bioperl bug tracking system to help us keep track
+the bugs and their resolution.  Bug reports can be submitted via the
+web:
+
+  http://bugzilla.open-bio.org/
+
+=head1 CONTRIBUTORS
+
+Rob Edwards redwards@utmem.edu
+Chad Matsalla bioinformatics1@dieselwurks.com
+Shawn Hoon shawnh-at-stanford.edu
+Jason Stajich jason-at-bioperl.org
+Brian Osborne osborne1-at-optonline.net
+Chris Fields cjfields-at-bioperl-dot-org
+Frank Schwach fs5-at-sanger.ac.uk
+
+=head1 SEE ALSO
+
+L<Bio::Tools::Primer3>
+
+=head1 APPENDIX
+
+The rest of the documentation details each of the object methods.
+Internal methods are usually preceded with a _
+
+=cut
+
+# Let the code begin...
+
+=head2 new()
+
+ Title   : new()
+ Usage   : my $primer3 = Bio::Tools::Run::Primer3->new(-file=>$file) to read
+           a primer3 output file.
+           my $primer3 = Bio::Tools::Run::Primer3->new(-seq=>sequence object)
+           design primers against sequence
+ Function: Start primer3 working and adds a sequence. At the moment it
+           will not clear out the old sequence, but I suppose it should.
+ Returns : Does not return anything. If called with a filename will allow
+           you to retrieve the results
+ Args    : -outfile : file name send output results to
+           -path    : path to primer3 executable
+           -p3_settings_file :(optional) path to the settings file. Supported only by primer3 version 2 or above.
+           -verbose :(optional) boolean value to set verbose output.
+
+=cut
+
+=head2 program_name
+
+ Title   : program_name
+ Usage   : $primer3->program_name()
+ Function: holds the program name
+ Returns:  string
+ Args    : None
+
+=cut
+
+=head2 program_dir
+
+ Title   : program_dir
+ Usage   : $primer3->program_dir($dir)
+ Function: returns the program directory, which may also be obtained from ENV variable.
+ Returns :  string
+ Args    :
+
+=cut
+
+=head2  version_check
+
+ Title   : version_check
+ Usage   : $v = $prog->version_check();
+ Function: Determine the version number of the program
+ Example :
+ Returns : a version.pm object in dotted-decimal form.
+ Args    : none
+ Note    : This was previously known as Bio::Tools::Run::Primer3Redux::version, and renamed to avoid confusion with version.pm
+
+=cut
+
+=head2 set_parameters()
+
+ Title   : set_parameters()
+ Usage   : $primer3->set_parameters(key=>value)
+ Function: Sets parameters for the input file
+ Returns : Returns the number of arguments added
+ Args    : See the primer3 docs.
+ Notes   : To set individual parameters use the associated method:
+           $primer3->PRIMER_MAX_TM(40)
+
+=cut
+
+=head2 get_parameters
+
+ Title    : get_parameters
+ Usage    : $obj->get_parameters
+ Function :
+ Returns  :
+ Args     :
+
+=cut
+
+=head2 reset_parameters()
+
+ Title   : reset_parameters()
+ Usage   : $primer3->reset_parameters()
+ Function: Resets all parameters to be undef
+ Returns : none
+ Args    : none; to reset specific targets call the specific method for that
+           target (i.e. $primer3->PRIMER_MAX_TM(undef))
+
+=cut
+
+=head2 p3_settings_file()
+
+ Title  : p3settingsfile()
+ Usage  : $primer3->p3settingsfile($file_path);
+ Function   : Getter/Setter for the Primer3 settings file.
+ Returns    : A string containing the path of the named settings file.
+ Args   : $file_path A valid file path to the settings file.
+ Note   : This argument only works in primer3 version 2 or above.
+
+=cut
+
+=head2 run
+
+ Title   : run
+ Usage   : $primer3->run;
+ Function: Generic run method for the primer3 program. The PRIMER_TASK
+           must be defined either in the parameter set or it defaults to
+           'pick_pcr_primers'.
+ Returns : A Bio::Tools::Primer3 object containing the results.
+           See the Bio::Tools::Primer3 documentation for those functions.
+ Args    : Bio::Seq object(s) to use as SEQUENCE_TEMPLATE(s)
+
+=cut
+
+=head2 _do_run
+
+ Title   : _do_run
+ Usage   : INTERNAL
+ Function: Generate input file and run the primer3 program.
+ Returns : A Bio::Tools::Primer3 object containing the results.
+           See the Bio::Tools::Primer3 documentation for those functions.
+ Args    : sequence or ref to array of sequences, [task]
+           If 'task' given, parameter 'PRIMER_TASK' is set to the given task,
+           otherwise, the 'PRIMER_TASK' parameter is used to detmine what to do.
+           If that too isn't set the primer3 will default to pick_pcr_primers
+
+=cut

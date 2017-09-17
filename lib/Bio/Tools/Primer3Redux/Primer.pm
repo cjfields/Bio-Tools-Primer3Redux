@@ -5,6 +5,78 @@
 # OWNER:    2006-2016 Chris Fields
 # LICENSE:  Perl_5
 
+package Bio::Tools::Primer3Redux::Primer;
+
+use strict;
+
+# Object preamble - inherits from Bio::Root::Root
+
+use base qw(Bio::SeqFeature::Generic);
+our $AUTOLOAD;
+
+sub oligo_type {
+    shift->primary_tag(@_);
+}
+
+sub rank {
+    my ($self, $rank) = @_;
+    if (defined $rank) {
+        $self->remove_tag('rank') if $self->has_tag('rank');
+        $self->add_tag_value('rank', $rank);
+    }
+    $self->has_tag('rank') ? return ($self->get_tag_values('rank'))[0] : return;
+}
+
+sub validate_seq {
+    my ($self) = shift;
+    my $cached = $self->has_tag('sequence') ? ($self->get_tag_values('sequence'))[0] : '';
+    my $seq = $self->seq->seq;
+    if ($cached ne $seq) {
+        $self->warn("Sequence [$seq] does not match predicted [$cached], check attached sequence");
+        return 0;
+    }
+    return 1;
+}
+
+sub melting_temp {
+    my ($self, $tm) = @_;
+    if (defined $tm) {
+        $self->remove_tag('tm') if $self->has_tag('tm');
+        $self->add_tag_value('tm', $tm);
+    }
+    $self->has_tag('tm') ? return ($self->get_tag_values('tm'))[0] : return;
+}
+
+sub gc_content {
+    my ($self, $gc) = @_;
+    if (defined $gc) {
+        $self->remove_tag('gc_percent') if $self->has_tag('gc_percent');
+        $self->add_tag_value('gc_percent', $gc);
+    }
+    $self->has_tag('gc_percent') ? return ($self->get_tag_values('gc_percent'))[0] : return;
+}
+
+sub run_description {
+    my ($self, $desc) = @_;
+    if (defined $desc) {
+        $self->remove_tag('explain') if $self->has_tag('explain');
+        $self->add_tag_value('explain', $desc);
+    }
+    $self->has_tag('explain') ? return ($self->get_tag_values('explain'))[0] : return;
+}
+
+sub AUTOLOAD {
+  my $self = shift;
+  my $type = ref($self) or $self->throw("$self is not an object");
+  my $name = $AUTOLOAD;
+  $name =~ s/.*://;
+  $self->has_tag($name) ? return ($self->get_tag_values($name))[0] : return;
+} # AUTOLOAD
+
+1;
+
+__END__
+
 # BioPerl module for Bio::Tools::Primer3Redux::Primer
 #
 # Cared for by Chris Fields cjfields at cpan dot org
@@ -73,15 +145,6 @@ Internal methods are usually preceded with a _
 
 # Let the code begin...
 
-package Bio::Tools::Primer3Redux::Primer;
-
-use strict;
-
-# Object preamble - inherits from Bio::Root::Root
-
-use base qw(Bio::SeqFeature::Generic);
-our $AUTOLOAD;
-
 =head2 oligo_type
 
  Title    : oligo_type
@@ -93,10 +156,6 @@ our $AUTOLOAD;
 
 =cut
 
-sub oligo_type {
-    shift->primary_tag(@_);
-}
-
 =head2 rank
 
  Title    : rank
@@ -106,15 +165,6 @@ sub oligo_type {
  Args     : optional string
 
 =cut
-
-sub rank {
-    my ($self, $rank) = @_;
-    if (defined $rank) {
-        $self->remove_tag('rank') if $self->has_tag('rank');
-        $self->add_tag_value('rank', $rank);
-    }
-    $self->has_tag('rank') ? return ($self->get_tag_values('rank'))[0] : return;
-}
 
 =head2 validate_seq
 
@@ -127,17 +177,6 @@ sub rank {
 
 =cut
 
-sub validate_seq {
-    my ($self) = shift;
-    my $cached = $self->has_tag('sequence') ? ($self->get_tag_values('sequence'))[0] : '';
-    my $seq = $self->seq->seq;
-    if ($cached ne $seq) {
-        $self->warn("Sequence [$seq] does not match predicted [$cached], check attached sequence");
-        return 0;
-    }
-    return 1;
-}
-
 =head2 melting_temp
 
  Title    : melting_temp
@@ -147,15 +186,6 @@ sub validate_seq {
  Args     : optional Tm (possibly calculated via other means)
 
 =cut
-
-sub melting_temp {
-    my ($self, $tm) = @_;
-    if (defined $tm) {
-        $self->remove_tag('tm') if $self->has_tag('tm');
-        $self->add_tag_value('tm', $tm);
-    }
-    $self->has_tag('tm') ? return ($self->get_tag_values('tm'))[0] : return;
-}
 
 =head2 gc_content
 
@@ -167,15 +197,6 @@ sub melting_temp {
 
 =cut
 
-sub gc_content {
-    my ($self, $gc) = @_;
-    if (defined $gc) {
-        $self->remove_tag('gc_percent') if $self->has_tag('gc_percent');
-        $self->add_tag_value('gc_percent', $gc);
-    }
-    $self->has_tag('gc_percent') ? return ($self->get_tag_values('gc_percent'))[0] : return;
-}
-
 =head2 run_description
 
  Title    : run_description
@@ -186,17 +207,8 @@ sub gc_content {
 
 =cut
 
-sub run_description {
-    my ($self, $desc) = @_;
-    if (defined $desc) {
-        $self->remove_tag('explain') if $self->has_tag('explain');
-        $self->add_tag_value('explain', $desc);
-    }
-    $self->has_tag('explain') ? return ($self->get_tag_values('explain'))[0] : return;
-}
-
 =head2 AUTOLOAD
- 
+
  Title   : AUTOLOAD
  Function: Used to access tags (properties) of the primer as given by primer3
            Check the primer3 documentation for available output tags (in lower case)
@@ -212,14 +224,3 @@ sub run_description {
  Returns : value for the requested tag, if tag is present, otherwise undef
 
 =cut
-
-sub AUTOLOAD {
-  my $self = shift;
-  my $type = ref($self) or $self->throw("$self is not an object");
-  my $name = $AUTOLOAD;
-  $name =~ s/.*://;
-  $self->has_tag($name) ? return ($self->get_tag_values($name))[0] : return;
-} # AUTOLOAD
-
-
-1;
