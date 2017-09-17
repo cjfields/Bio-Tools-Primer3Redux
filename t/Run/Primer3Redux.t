@@ -98,7 +98,7 @@ my @tests = (
           'PRIMER_EXPLAIN_FLAG'                 => 1,
           'PRIMER_PRODUCT_MIN_TM'               => 60,
           'PRIMER_PRODUCT_SIZE_RANGE'           => '50-200',
-          'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' => '0,70,140,70', 
+          'SEQUENCE_PRIMER_PAIR_OK_REGION_LIST' => '0,70,140,70',
       },
       expect => {
           num_pairs => 5,
@@ -261,11 +261,11 @@ SKIP: {
                       cmp_ok( $rp->seq->length, '>', 18,
                           "rev primer length >18" );
 
-                      # these properties are implemented specifically in the 
+                      # these properties are implemented specifically in the
                       # Primer object
                       cmp_ok( $primer->gc_content,   '>', 40, 'GC content >40' );
                       cmp_ok( $primer->melting_temp, '>', 50, 'Tm > 50' );
-                      
+
                       # these properties are from auto-generated accessors
                       # in the Primer object - we have one for each output
                       # tag returned by primer3 (lower case)
