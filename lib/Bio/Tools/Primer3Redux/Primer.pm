@@ -73,6 +73,9 @@ sub AUTOLOAD {
   $self->has_tag($name) ? return ($self->get_tag_values($name))[0] : return;
 } # AUTOLOAD
 
+# useful for older perl versions
+sub DESTROY {}
+
 1;
 
 __END__
